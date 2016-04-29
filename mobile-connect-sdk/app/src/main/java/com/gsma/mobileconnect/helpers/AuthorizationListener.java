@@ -14,4 +14,11 @@ public interface AuthorizationListener {
      * @param response a token response
      */
     public void tokenReceived(RequestTokenResponse response);
+
+    /**
+     * In the event an Authorization failed this method will be called by the SDK. It will return a status object that
+     * will contain further details of the error or a notification that discovery is required.
+     * @param mobileConnectStatus
+     */
+    void authorizationFailed(MobileConnectStatus mobileConnectStatus);
 }

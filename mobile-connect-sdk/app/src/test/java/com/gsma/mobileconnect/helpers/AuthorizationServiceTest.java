@@ -35,7 +35,9 @@ import com.gsma.mobileconnect.oidc.IRequestTokenCallback;
 import com.gsma.mobileconnect.oidc.IStartAuthenticationCallback;
 import com.gsma.mobileconnect.oidc.OIDCException;
 import com.gsma.mobileconnect.oidc.ParsedAuthorizationResponse;
+import com.gsma.mobileconnect.oidc.ParsedIdToken;
 import com.gsma.mobileconnect.oidc.RequestTokenResponse;
+import com.gsma.mobileconnect.oidc.RequestTokenResponseData;
 import com.gsma.mobileconnect.oidc.StartAuthenticationResponse;
 import com.gsma.mobileconnect.oidc.TokenOptions;
 import com.gsma.mobileconnect.utils.ErrorResponse;
@@ -46,6 +48,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RobolectricTestRunner;
@@ -62,6 +65,8 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -373,7 +378,7 @@ public class AuthorizationServiceTest
 
 
         // WHEN
-        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config,null);
+        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config, null);
 
         // THEN
         assertTrue(status.isStartDiscovery());
@@ -718,6 +723,69 @@ public class AuthorizationServiceTest
         // THEN
         assertTrue(matchingState);
     }
+
+    @Test
+    public void testListenerSuccess()
+    {
+        MobileConnectStatus mobileConnectStatus = mock(MobileConnectStatus.class);
+        RequestTokenResponse response = mock(RequestTokenResponse.class);
+        RequestTokenResponseData responseData = mock(RequestTokenResponseData.class);
+        ParsedIdToken parsedIdToken = mock(ParsedIdToken.class);
+
+        AuthorizationListener listener = mock(AuthorizationListener.class);
+
+        when(mobileConnectStatus.isComplete()).thenReturn(true);
+
+        when(mobileConnectStatus.getRequestTokenResponse()).thenReturn(response);
+        when(response.getResponseData()).thenReturn(responseData);
+        when(responseData.getParsedIdToken()).thenReturn(parsedIdToken);
+        when(parsedIdToken.get_pcr()).thenReturn("token");
+
+        AuthorizationService connect = new AuthorizationService();
+        connect.notifyListener(mobileConnectStatus, listener);
+
+        verify(listener, times(1)).tokenReceived(Mockito.any(RequestTokenResponse.class));
+    }
+
+    @Test
+    public void testListenerError()
+    {
+        MobileConnectStatus mobileConnectStatus = mock(MobileConnectStatus.class);
+        RequestTokenResponse response = mock(RequestTokenResponse.class);
+        RequestTokenResponseData responseData = mock(RequestTokenResponseData.class);
+        ParsedIdToken parsedIdToken = mock(ParsedIdToken.class);
+
+        AuthorizationListener listener = mock(AuthorizationListener.class);
+
+        when(mobileConnectStatus.isError()).thenReturn(true);
+
+        AuthorizationService connect = new AuthorizationService();
+        connect.notifyListener(mobileConnectStatus, listener);
+
+        verify(listener, times(1)).authorizationFailed(mobileConnectStatus);
+        verify(listener, times(0)).tokenReceived(Mockito.any(RequestTokenResponse.class));
+    }
+
+    @Test
+    public void testListenerDiscovery()
+    {
+        MobileConnectStatus mobileConnectStatus = mock(MobileConnectStatus.class);
+        RequestTokenResponse response = mock(RequestTokenResponse.class);
+        RequestTokenResponseData responseData = mock(RequestTokenResponseData.class);
+        ParsedIdToken parsedIdToken = mock(ParsedIdToken.class);
+
+        AuthorizationListener listener = mock(AuthorizationListener.class);
+
+        when(mobileConnectStatus.isStartDiscovery()).thenReturn(true);
+
+        AuthorizationService connect = new AuthorizationService();
+        connect.notifyListener(mobileConnectStatus, listener);
+
+        verify(listener, times(1)).authorizationFailed(mobileConnectStatus);
+        verify(listener, times(0)).tokenReceived(Mockito.any(RequestTokenResponse.class));
+    }
+
+
 
     private void mockStartAutomatedOperatorDiscoverySuccess(IDiscovery mockedDiscovery, final DiscoveryResponse discoveryResponse) throws DiscoveryException
     {

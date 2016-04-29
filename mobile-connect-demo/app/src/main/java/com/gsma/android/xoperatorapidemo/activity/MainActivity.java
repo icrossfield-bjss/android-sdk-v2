@@ -497,4 +497,11 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
 
         authorizationCodeResponse(state, token, error, clientId, clientSecret, openIDConnectScopes, returnUri);
     }
+
+    @Override
+    public void authorizationFailed(MobileConnectStatus mobileConnectStatus) {
+        Log.d(TAG, "AuthorizationFailed");
+        Toast authorizationFailed = Toast.makeText(getApplicationContext(), "AuthorizationFailed", Toast.LENGTH_SHORT);
+        authorizationFailed.show();
+    }
 }

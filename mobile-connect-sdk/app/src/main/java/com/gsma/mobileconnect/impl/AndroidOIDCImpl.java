@@ -17,6 +17,7 @@ import com.gsma.mobileconnect.oidc.RequestTokenResponse;
 import com.gsma.mobileconnect.oidc.StartAuthenticationResponse;
 import com.gsma.mobileconnect.oidc.TokenOptions;
 import com.gsma.mobileconnect.utils.AndroidJsonUtils;
+import com.gsma.mobileconnect.utils.AndroidRestClient;
 import com.gsma.mobileconnect.utils.Constants;
 import com.gsma.mobileconnect.utils.HttpUtils;
 import com.gsma.mobileconnect.utils.ParsedOperatorIdentifiedDiscoveryResult;
@@ -53,7 +54,7 @@ public class AndroidOIDCImpl extends OIDCImpl implements IOIDC {
     public static final String DISCOVERY_RESULT = "discoveryResult";
 
     private RestClient restClient;
-    public AndroidOIDCImpl(RestClient restClient) {
+    public AndroidOIDCImpl(AndroidRestClient restClient) {
         super(restClient);
         this.restClient = restClient;
     }

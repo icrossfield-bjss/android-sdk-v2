@@ -36,11 +36,12 @@ import com.gsma.mobileconnect.oidc.DiscoveryResponseExpiredException;
 import com.gsma.mobileconnect.oidc.IOIDC;
 import com.gsma.mobileconnect.oidc.OIDCException;
 import com.gsma.mobileconnect.oidc.ParsedAuthorizationResponse;
+import com.gsma.mobileconnect.oidc.ParsedIdToken;
 import com.gsma.mobileconnect.oidc.RequestTokenResponse;
+import com.gsma.mobileconnect.oidc.RequestTokenResponseData;
 import com.gsma.mobileconnect.oidc.TokenOptions;
 import com.gsma.mobileconnect.utils.AndroidRestClient;
 import com.gsma.mobileconnect.utils.ErrorResponse;
-import com.gsma.mobileconnect.utils.RestClient;
 import com.gsma.mobileconnect.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -70,7 +71,7 @@ public class AuthorizationService extends BaseService
 
 
     public AuthorizationService() {
-        RestClient client = new AndroidRestClient();
+        AndroidRestClient client = new AndroidRestClient();
         oidc = new AndroidOIDCImpl(client);
     }
 
@@ -349,28 +350,7 @@ public class AuthorizationService extends BaseService
                         MobileConnectStatus mobileConnectStatus = connect.callMobileConnectOnAuthorizationRedirect(config,response);
 
 
-                        if(mobileConnectStatus.isError())
-                        {
-                            // An error occurred, the error, description and (optionally) exception is available.
-                            Log.d(TAG,"Authorization has failed");
-                            Log.d(TAG, mobileConnectStatus.getError());
-                            Log.d(TAG, mobileConnectStatus.getDescription());
-                            Log.d(TAG, mobileConnectStatus.getResponseJson().toString());
-                        }
-                        else if(mobileConnectStatus.isStartDiscovery())
-                        {
-                            // The operator could not be identified, start the discovery process.
-                            Log.d(TAG, "The operator could not be identified, need to restart the discovery process.");
-                        }
-                        else if(mobileConnectStatus.isComplete())
-                        {
-                            // Successfully authenticated, ParsedAuthenticationResponse and RequestTokenResponse are available
-                            String token = mobileConnectStatus.getRequestTokenResponse().getResponseData().getParsedIdToken().get_pcr();
-                            Log.d(TAG, "Authorization has completed successfully");
-                            Log.d(TAG, "PCR is " +token);
-
-                            listener.tokenReceived(mobileConnectStatus.getRequestTokenResponse());
-                        }
+                        notifyListener(mobileConnectStatus, listener);
 
                         if ((code!=null && code.trim().length()>0) && (error==null || error.trim().length()==0) && _state.equalsIgnoreCase(state)) {
 
@@ -408,6 +388,54 @@ public class AuthorizationService extends BaseService
         } catch (NullPointerException e){
             Log.d(TAG, "NullPointerException=" + e.getMessage(),e);
 
+        }
+    }
+
+    protected void notifyListener(MobileConnectStatus mobileConnectStatus, AuthorizationListener listener) {
+        if(mobileConnectStatus == null)
+        {
+            listener.authorizationFailed(MobileConnectStatus.startDiscovery());
+        }
+        else if(mobileConnectStatus.isError())
+        {
+            // An error occurred, the error, description and (optionally) exception is available.
+            Log.d(TAG, "Authorization has failed");
+            Log.d(TAG, mobileConnectStatus.getError());
+            Log.d(TAG, mobileConnectStatus.getDescription());
+
+            listener.authorizationFailed(mobileConnectStatus);
+        }
+        else if(mobileConnectStatus.isStartDiscovery())
+        {
+            // The operator could not be identified, start the discovery process.
+            Log.d(TAG, "The operator could not be identified, need to restart the discovery process.");
+            listener.authorizationFailed(mobileConnectStatus);
+        }
+        else if(mobileConnectStatus.isComplete())
+        {
+            // Successfully authenticated, ParsedAuthenticationResponse and RequestTokenResponse are available
+            try
+            {
+                RequestTokenResponse response = mobileConnectStatus.getRequestTokenResponse();
+                RequestTokenResponseData responseData = response.getResponseData();
+                ParsedIdToken parsedIdToken = responseData.getParsedIdToken();
+                String token = parsedIdToken.get_pcr();
+                Log.d(TAG, "Authorization has completed successfully");
+                Log.d(TAG, "PCR is " + token);
+
+                listener.tokenReceived(mobileConnectStatus.getRequestTokenResponse());
+            }
+            catch(Exception e)
+            {
+                //This shouldn't happen so we will catch as exception to ensure something would return
+                Log.d(TAG, "Part of the Auth response was incorrect", e);
+                listener.authorizationFailed(MobileConnectStatus.startDiscovery());
+            }
+        }
+        else
+        {
+            Log.d(TAG, "The status is in an unknown state (not Complete, Error or Start Discovery - please restart discovery");
+            listener.authorizationFailed(MobileConnectStatus.startDiscovery());
         }
     }
 
