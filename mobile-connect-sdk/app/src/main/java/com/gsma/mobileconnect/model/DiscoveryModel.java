@@ -17,6 +17,8 @@ public class DiscoveryModel {
 
     private String discoveryServiceRedirectedURL;
 
+    private String encryptedMSISDN=null;
+
     public static DiscoveryModel getInstance() {
         return ourInstance;
     }
@@ -47,4 +49,14 @@ public class DiscoveryModel {
     public void setDiscoveryServiceRedirectedURL(String discoveryServiceRedirectedURL) {
         this.discoveryServiceRedirectedURL = discoveryServiceRedirectedURL;
     }
+
+    public String getEncryptedMSISDN() {
+        return encryptedMSISDN;
+    }
+
+    public void setEncryptedMSISDN(String encryptedMSISDN) {
+        this.encryptedMSISDN = encryptedMSISDN;
+    }
+
+
 }

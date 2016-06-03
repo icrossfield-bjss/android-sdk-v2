@@ -163,6 +163,8 @@ public class DiscoveryService extends BaseService
             //move to models
             DiscoveryModel.getInstance().setMcc(parsedDiscoveryRedirect.getSelectedMCC());
             DiscoveryModel.getInstance().setMnc(parsedDiscoveryRedirect.getSelectedMNC());
+            DiscoveryModel.getInstance().setEncryptedMSISDN(parsedDiscoveryRedirect.getEncryptedMSISDN());
+
         }
         catch (DiscoveryException ex)
         {
