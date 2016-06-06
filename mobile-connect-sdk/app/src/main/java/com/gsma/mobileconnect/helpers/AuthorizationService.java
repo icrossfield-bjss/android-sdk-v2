@@ -197,7 +197,6 @@ public class AuthorizationService extends BaseService
     }
 
 
-
     /**
      * Handles the process between the MNO and the end user for the end user to
      * sign in/ authorize the application. The application hands over to the
@@ -223,10 +222,41 @@ public class AuthorizationService extends BaseService
     public void authorize(final MobileConnectConfig config,String authUri, String clientId, String clientSecret, String scopes,
                           final String redirectUri, String state, String nonce,
                           int maxAge, String acrValues, Activity activity, final AuthorizationListener listener, final DiscoveryResponse response) throws UnsupportedEncodingException {
+
+        authorize(config, authUri, clientId, clientSecret, scopes,
+            redirectUri, state, nonce,
+            maxAge, acrValues, activity, listener, response,
+            null);
+    }
+
+    /**
+     * Handles the process between the MNO and the end user for the end user to
+     * sign in/ authorize the application. The application hands over to the
+     * browser during the authorization step. On completion the MNO redirects to
+     * the application sending the completion information as URL parameters.
+     *
+     * @param config the mobile config
+     * @param authUri the URI to the MNO's authorization page
+     * @param clientId the application id
+     * @param clientSecret the application secret
+     * @param scopes which is an application specified string value.
+     * @param redirectUri which is the return point after the user has
+     *            authenticated/consented.
+     * @param state which is application specified.
+     * @param nonce which is application specified.
+     * @param maxAge which is an integer value.
+     * @param acrValues which is an application specified.
+     * @param activity The parent Activity
+     * @param listener The listener used to alert the activity to the change
+     * @param response The information captured in the discovery phase.
+     * @param hmapExtraOptions  A HashMap containing additional authorization options
+     * @throws UnsupportedEncodingException
+     */
+    public void authorize(final MobileConnectConfig config,String authUri, String clientId, String clientSecret, String scopes,
+                          final String redirectUri, String state, String nonce,
+                          int maxAge, String acrValues, Activity activity, final AuthorizationListener listener, final DiscoveryResponse response,
+                          HashMap<String, Object> hmapExtraOptions) throws UnsupportedEncodingException {
         try{
-            HashMap<String, Object> hmapExtraOptions = null;
-
-
             Log.d(TAG, "authUri = " + authUri);
             Log.d(TAG, "responseType = code" );
             Log.d(TAG, "clientId = " + clientId);
