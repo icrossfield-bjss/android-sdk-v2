@@ -29,10 +29,16 @@ android {
 
 }
 
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
 
 dependencies {
 
-    compile project(':app-debug')
+    compile (name:'mobile-connect-android-sdk-debug', ext:'aar')
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
     compile 'com.android.support:support-v4:23.1.1'

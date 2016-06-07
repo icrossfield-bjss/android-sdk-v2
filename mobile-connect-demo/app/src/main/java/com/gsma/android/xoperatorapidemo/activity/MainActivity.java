@@ -1,10 +1,12 @@
 package com.gsma.android.xoperatorapidemo.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -48,6 +50,7 @@ import java.util.UUID;
 public class MainActivity extends Activity implements AuthorizationListener, View.OnClickListener {
 
     private static final String TAG = "MainActivity";
+    private static final int PERMISSIONS_CODE_PHONE_STATE = 9875576;
 
     public static MainActivity mainActivityInstance = null;
     static Handler discoveryHandler = null;
@@ -112,13 +115,20 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
         startOperatorId = (Button) findViewById(R.id.startOperatorId);
         settingButton = (Button) findViewById(R.id.settingsButton);
 
+        if(!PhoneUtils.requestPermission(this, Manifest.permission.READ_PHONE_STATE, PERMISSIONS_CODE_PHONE_STATE)){
+            return;
+        }
+
+        createAfterPermissionsGranted();
+    }
+
+    private void createAfterPermissionsGranted() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         intentFilter.addAction("android.intent.action.PHONE_STATE");
         intentFilter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
 
         this.registerReceiver(this.ConnectivityChangedReceiver, intentFilter);
-
 
 		/*
          * load settings from private local storage
@@ -172,6 +182,20 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
         updatePhoneState();
         vMCC.setText(DiscoveryModel.getInstance().getMcc());
         vMNC.setText(DiscoveryModel.getInstance().getMnc());
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch(requestCode) {
+            case PERMISSIONS_CODE_PHONE_STATE:
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    createAfterPermissionsGranted();
+                    initialiseDiscovery();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
     @Override
@@ -236,6 +260,14 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
     @Override
     public void onStart() {
         super.onStart();
+
+        initialiseDiscovery();
+    }
+
+    private void initialiseDiscovery() {
+        if(!PhoneUtils.hasPermission(this, Manifest.permission.READ_PHONE_STATE)){
+            return;
+        }
 
         Log.d(TAG, "Checking for cached discovery response");
         vMCC.setText(DiscoveryModel.getInstance().getMcc() != null ? DiscoveryModel.getInstance().getMcc() : getText(R.string.valueUnknown));
