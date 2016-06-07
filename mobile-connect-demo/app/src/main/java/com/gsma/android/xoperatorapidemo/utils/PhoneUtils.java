@@ -1,8 +1,13 @@
 package com.gsma.android.xoperatorapidemo.utils;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
+import android.app.Activity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -88,5 +93,18 @@ public class PhoneUtils {
 		return new PhoneState(msisdn, simOperator, mcc, mnc, connected,
 				usingMobileData, roaming, simSerialNumber);
 
+	}
+
+	public static boolean hasPermission(Activity activity, String permission) {
+		return ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED;
+	}
+
+	public static boolean requestPermission(Activity activity, String permission, int requestPermissionId) {
+		boolean hasPermission = hasPermission(activity, permission);
+		if(!hasPermission) {
+			ActivityCompat.requestPermissions(activity, new String[]{ permission }, requestPermissionId);
+		}
+
+		return hasPermission;
 	}
 }

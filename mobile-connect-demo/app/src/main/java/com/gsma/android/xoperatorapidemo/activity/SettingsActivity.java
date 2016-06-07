@@ -1,8 +1,10 @@
 package com.gsma.android.xoperatorapidemo.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -23,6 +25,7 @@ import com.gsma.android.xoperatorapidemo.utils.PhoneUtils;
 public class SettingsActivity extends Activity {
 
     private static final String TAG = "SettingsActivity";
+    private static final int PERMISSIONS_CODE_PHONE_STATE = 1231234;
 
     public static SettingsActivity settingsActivityInstance = null;
 
@@ -198,7 +201,24 @@ public class SettingsActivity extends Activity {
         updateMccMnc(this);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch(requestCode) {
+            case PERMISSIONS_CODE_PHONE_STATE:
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    updateMccMnc(this);
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
     public static void updateMccMnc(Activity activity) {
+        if(!PhoneUtils.requestPermission(activity, Manifest.permission.READ_PHONE_STATE, PERMISSIONS_CODE_PHONE_STATE)){
+            return;
+        }
+
         mcc = null; // Mobile country code
         mnc = null; // Mobile network code
 
