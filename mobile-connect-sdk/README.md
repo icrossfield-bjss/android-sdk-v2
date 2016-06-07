@@ -19,6 +19,12 @@ Mobile Connect SDK
 
 The Mobile Connect SDK uses Gradle build the Android Archive (AAR)
 
+This is generated into the following destinations once built:
+
+app/build/outputs/aar/mobile-connect-android-sdk-debug.aar
+app/build/outputs/aar/mobile-connect-android-sdk-release.aar
+
+
 Build Instructions
 ------------------
 
