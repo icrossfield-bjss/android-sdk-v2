@@ -456,7 +456,7 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
             String clientSecret=AndroidJsonUtils.getExpectedStringValue(discoveryResponse, "client_secret");
             Log.d(TAG, "clientSecret = "+clientSecret);
 
-            String encryptedMSISDN=status.getDiscoveryResponse().
+            //String encryptedMSISDN=status.getDiscoveryResponse().//
 
 //            String clientId=AndroidJsonUtils.
 
