@@ -59,12 +59,12 @@ public class DemoConfig {
 
 		MobileConnectConfig mobileConnectConfig = new MobileConnectConfig();
 
-		// Registered application client id
-		mobileConnectConfig.setClientId(properties.getProperty("config.clientId"));
-
-		// Registered application client secret
-		mobileConnectConfig.setClientSecret(properties.getProperty("config.clientSecret"));
-
+//		// Registered application client id
+//		mobileConnectConfig.setClientId(properties.getProperty("config.clientId"));
+//
+//		// Registered application client secret
+//		mobileConnectConfig.setClientSecret(properties.getProperty("config.clientSecret"));
+//
 		// Registered application url
 		mobileConnectConfig.setApplicationURL(properties.getProperty("config.applicationURL"));
 

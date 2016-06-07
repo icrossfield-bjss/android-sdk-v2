@@ -346,7 +346,7 @@ public class AndroidJsonUtils
      * @return The child node if found.
      * @throws NoFieldException Thrown if field not found.
      */
-    static private JsonNode getExpectedNode(JsonNode parentNode, String name)
+    public static JsonNode getExpectedNode(JsonNode parentNode, String name)
             throws NoFieldException
     {
         JsonNode childNode = parentNode.get(name);
@@ -365,7 +365,7 @@ public class AndroidJsonUtils
      * @return The text value of the child node.
      * @throws NoFieldException Thrown if field not found.
      */
-    static private String getExpectedStringValue(JsonNode parentNode, String name)
+    public static String getExpectedStringValue(JsonNode parentNode, String name)
             throws NoFieldException
     {
         JsonNode childNode = parentNode.get(name);
@@ -385,7 +385,7 @@ public class AndroidJsonUtils
      * @param name Name of the optional child node.
      * @return Text value of child node, if found, null otherwise.
      */
-    static String getOptionalStringValue(JsonNode parentNode, String name)
+    public static String getOptionalStringValue(JsonNode parentNode, String name)
     {
         JsonNode childNode = parentNode.get(name);
         if(null == childNode)
@@ -407,7 +407,7 @@ public class AndroidJsonUtils
      * @param name The name of the optional child.
      * @return Integer value of the child node if present, null otherwise.
      */
-    static private Integer getOptionalIntegerValue(JsonNode parentNode, String name)
+    public static Integer getOptionalIntegerValue(JsonNode parentNode, String name)
     {
         JsonNode childNode = parentNode.get(name);
         if(null == childNode)
@@ -429,7 +429,7 @@ public class AndroidJsonUtils
      * @param name The name of the optional child.
      * @return Long value of the child node if present, null otherwise.
      */
-    static private Long getOptionalLongValue(JsonNode parentNode, String name)
+    public static Long getOptionalLongValue(JsonNode parentNode, String name)
     {
         JsonNode childNode = parentNode.get(name);
         if(null == childNode)

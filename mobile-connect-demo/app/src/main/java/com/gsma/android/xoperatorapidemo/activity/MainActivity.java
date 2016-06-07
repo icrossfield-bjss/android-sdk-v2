@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.gsma.android.R;
 import com.gsma.android.xoperatorapidemo.discovery.DiscoveryStartupSettings;
 import com.gsma.android.xoperatorapidemo.utils.DemoConfig;
@@ -37,6 +38,7 @@ import com.gsma.mobileconnect.model.DiscoveryModel;
 import com.gsma.mobileconnect.oidc.RequestTokenResponse;
 import com.gsma.mobileconnect.utils.AndroidJsonUtils;
 import com.gsma.mobileconnect.utils.JsonUtils;
+import com.gsma.mobileconnect.utils.NoFieldException;
 import com.gsma.mobileconnect.utils.ParsedOperatorIdentifiedDiscoveryResult;
 
 import java.io.UnsupportedEncodingException;
@@ -98,7 +100,6 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
         Log.d(TAG, "onCreate called");
 
         config = DemoConfig.getMobileConfig(this);
-
 
         vMCC = (TextView) findViewById(R.id.valueMCC);
         vMNC = (TextView) findViewById(R.id.valueMNC);
@@ -381,6 +382,12 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
 
                 config.setIdentifiedMCC(null);
                 config.setIdentifiedMNC(null);
+                config.setClientId(SettingsActivity.getDeveloperOperator().getAppKey());
+                config.setClientSecret(SettingsActivity.getDeveloperOperator().getAppSecret());
+                config.setDiscoveryURL(SettingsActivity.getDeveloperOperator().getEndpoint());
+
+                Log.d(TAG, "Starting discovery via "+config.getDiscoveryURL()+" for settings "+SettingsActivity.getDeveloperOperator().getName());
+
                 status = discoveryService.callMobileConnectForStartDiscovery(config);
                 if (status.isOperatorSelection()) {
                     Log.d(TAG, "Operator Selection required");
@@ -401,17 +408,32 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
      * @param view
      * @throws UnsupportedEncodingException
      */
-    public void startOperatorId(View view) throws UnsupportedEncodingException {
+    public void startOperatorId(View view) throws UnsupportedEncodingException, NoFieldException {
         if (status != null) {
 
             DiscoveryResponse resp = status.getDiscoveryResponse();
+            JsonNode discoveryResponseWrapper = resp.getResponseData();
+            JsonNode discoveryResponse = discoveryResponseWrapper.get("response");
+
+
+            Log.d(TAG, "getting client_id from discovery response "+discoveryResponse.toString());
+
+            String clientId=AndroidJsonUtils.getExpectedStringValue(discoveryResponse, "client_id");
+            Log.d(TAG, "clientId = "+clientId);
+
+            String clientSecret=AndroidJsonUtils.getExpectedStringValue(discoveryResponse, "client_secret");
+            Log.d(TAG, "clientSecret = "+clientSecret);
+
+            String encryptedMSISDN=status.getDiscoveryResponse().
+
+//            String clientId=AndroidJsonUtils.
 
             String openIDConnectScopes = "openid";
 
             //  String returnUri=getMobileConnectConfig().getAuthorizationRedirectURL();
-            String returnUri = "https://localhost:8080";
-            String clientId = config.getClientId();
-            String clientSecret = config.getClientSecret();
+            String returnUri = config.getApplicationURL();
+//            String clientId = resp..getClientId();
+//            String clientSecret = config.getClientSecret();
             String state = UUID.randomUUID().toString();
             String nonce = UUID.randomUUID().toString();
             int maxAge = 3600;
