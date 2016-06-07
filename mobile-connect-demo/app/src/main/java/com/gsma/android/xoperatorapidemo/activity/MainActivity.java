@@ -44,8 +44,8 @@ import com.gsma.mobileconnect.utils.NoFieldException;
 import com.gsma.mobileconnect.utils.ParsedOperatorIdentifiedDiscoveryResult;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.UUID;
-
 
 public class MainActivity extends Activity implements AuthorizationListener, View.OnClickListener {
 
@@ -65,6 +65,7 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
     TextView vDiscoveryStatus = null;
     Button startOperatorId = null;
     Button settingButton = null;
+    String encryptedMSISDN = null;
     RelativeLayout rlayout;
     DiscoveryService discoveryService = new DiscoveryService();
     AuthorizationService authorizationService = new AuthorizationService();
@@ -160,7 +161,9 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
                         vMCC.setText(DiscoveryModel.getInstance().getMcc());
                         vMNC.setText(DiscoveryModel.getInstance().getMnc());
                         vDiscoveryStatus.setText(getString(R.string.discoveryStatusCompleted));
+                        encryptedMSISDN=DiscoveryModel.getInstance().getEncryptedMSISDN();
                         Log.d(TAG, "Discovery Complete");
+                        Log.d(TAG, "Encrypted MSISDN="+encryptedMSISDN);
                     } else {
                         vDiscoveryStatus.setText(getString(R.string.discoveryStatusFailer));
                         Log.d(TAG, getString(R.string.discoveryStatusFailer));
@@ -341,6 +344,7 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
         Log.d(TAG, "Run Discovery");
         updatePhoneState();
         vDiscoveryStatus.setText(getString(R.string.discoveryStatusStarted));
+        encryptedMSISDN=null;
 
         config.setIdentifiedMCC(DiscoveryModel.getInstance().getMcc());
         config.setIdentifiedMNC(DiscoveryModel.getInstance().getMnc());
@@ -448,6 +452,14 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
             JsonNode discoveryResponse = discoveryResponseWrapper.get("response");
 
 
+            String encryptedMSISDN=DiscoveryModel.getInstance().getEncryptedMSISDN();
+            HashMap<String, Object> authOptions=new HashMap<String, Object>();
+            if (encryptedMSISDN!=null) {
+                String hint="ENCR_MSISDN:"+encryptedMSISDN;
+                Log.d(TAG, "Setting login_hint to "+hint);
+                authOptions.put("login_hint", hint);
+            }
+
             Log.d(TAG, "getting client_id from discovery response "+discoveryResponse.toString());
 
             String clientId=AndroidJsonUtils.getExpectedStringValue(discoveryResponse, "client_id");
@@ -492,7 +504,7 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
 
                 Log.d(TAG, "Starting OpenIDConnect authorization");
                 authorizationService.authorize(config, authorizationHref, clientId, clientSecret, openIDConnectScopes, returnUri, state, nonce,
-                        maxAge, acrValues, this, this, resp);
+                        maxAge, acrValues, this, this, resp, authOptions);
             }
 
         }
