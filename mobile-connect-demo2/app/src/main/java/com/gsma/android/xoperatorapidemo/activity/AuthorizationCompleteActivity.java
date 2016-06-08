@@ -66,8 +66,6 @@ public class AuthorizationCompleteActivity extends Activity implements UserInfoL
 		setContentView(R.layout.activity_identity_authorization_complete);
 		
 		statusField = (TextView) findViewById(R.id.authorizationCompleteStatus);
-
-
 	}
 
 	/*
@@ -124,7 +122,6 @@ public class AuthorizationCompleteActivity extends Activity implements UserInfoL
 		Intent intent = new Intent(authorizationCompleteActivityInstance, MainActivity.class);
 		startActivity(intent);
 	}
-
 
 	public void tokenResponse(RequestTokenResponse response) {
 		//Log.d(TAG, "received token response");

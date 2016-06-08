@@ -22,9 +22,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.gsma.android.R;
-import com.gsma.android.xoperatorapidemo.discovery.DiscoveryStartupSettings;
-import com.gsma.android.xoperatorapidemo.utils.DemoConfig;
+import com.gsma.android.xoperatorapidemo.utils.AppSettings;
 import com.gsma.android.xoperatorapidemo.utils.PhoneState;
 import com.gsma.android.xoperatorapidemo.utils.PhoneUtils;
 import com.gsma.mobileconnect.discovery.DiscoveryResponse;
@@ -37,9 +37,11 @@ import com.gsma.mobileconnect.model.DiscoveryModel;
 import com.gsma.mobileconnect.oidc.RequestTokenResponse;
 import com.gsma.mobileconnect.utils.AndroidJsonUtils;
 import com.gsma.mobileconnect.utils.JsonUtils;
+import com.gsma.mobileconnect.utils.NoFieldException;
 import com.gsma.mobileconnect.utils.ParsedOperatorIdentifiedDiscoveryResult;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.UUID;
 
 
@@ -53,16 +55,14 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
     private static boolean discoveryComplete = false;
     private static boolean connectionExists = true;
     private static MobileConnectStatus status;
-    Button discoveryButton = null;
     TextView vMCC = null;
     TextView vMNC = null;
     TextView vStatus = null;
     TextView vDiscoveryStatus = null;
     Button startOperatorId = null;
-    Button settingButton = null;
     RelativeLayout rlayout;
-    DiscoveryService discoveryService = new DiscoveryService();
-    AuthorizationService authorizationService = new AuthorizationService();
+    DiscoveryService discoveryService = null;
+    AuthorizationService authorizationService = null;
     MobileConnectConfig config;
 
 
@@ -74,14 +74,6 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
         }
 
     };
-
-    /**
-     * Clear the current state.
-     */
-    public static void clearDiscoveryData() {
-        Log.d(TAG, "Clearing discovery data");
-        status = null;
-    }
 
     /*
      * method called when the application first starts.
@@ -97,8 +89,7 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
 
         Log.d(TAG, "onCreate called");
 
-        config = DemoConfig.getMobileConfig(this);
-
+        config = AppSettings.getMobileConnectConfig();
 
         vMCC = (TextView) findViewById(R.id.valueMCC);
         vMNC = (TextView) findViewById(R.id.valueMNC);
@@ -107,9 +98,7 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
         vStatus = (TextView) findViewById(R.id.valueStatus);
         vDiscoveryStatus = (TextView) findViewById(R.id.valueDiscoveryStatus);
 
-        discoveryButton = (Button) findViewById(R.id.discoveryButton);
         startOperatorId = (Button) findViewById(R.id.startOperatorId);
-        settingButton = (Button) findViewById(R.id.settingsButton);
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
@@ -117,12 +106,6 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
         intentFilter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
 
         this.registerReceiver(this.ConnectivityChangedReceiver, intentFilter);
-
-
-		/*
-         * load settings from private local storage
-		 */
-        SettingsActivity.loadSettings(this);
 
         rlayout = (RelativeLayout) findViewById(R.id.mainActivity);
         rlayout.setOnClickListener(new View.OnClickListener() {
@@ -150,6 +133,8 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
                         vMNC.setText(DiscoveryModel.getInstance().getMnc());
                         vDiscoveryStatus.setText(getString(R.string.discoveryStatusCompleted));
                         Log.d(TAG, "Discovery Complete");
+
+                        runMobileConnectLogin();
                     } else {
                         vDiscoveryStatus.setText(getString(R.string.discoveryStatusFailer));
                         Log.d(TAG, getString(R.string.discoveryStatusFailer));
@@ -157,7 +142,6 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
                 } else {
                     Log.d(TAG, "Discovery failed - Status is empty");
                 }
-                setButtonStates(status);
             }
         };
 
@@ -208,21 +192,13 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
         if (!roaming && !usingMobileData && (wifi.getConnectionInfo().getNetworkId() == -1)) {
             //no wifi or roaming or mobile data
             rlayout.setClickable(true);
-            discoveryButton.setEnabled(false);
             startOperatorId.setEnabled(false);
-            settingButton.setEnabled(false);
             connectionExists = false;
         } else {
             //assume an internet connection is avilable
             rlayout.setClickable(false);
-            setButtonStates(status);
-            settingButton.setEnabled(true);
+            startOperatorId.setEnabled(true);
             connectionExists = true;
-        }
-
-        if (SettingsActivity.getServingOperator().isAutomatic()) {
-            DiscoveryModel.getInstance().setMcc(state.getMcc());
-            DiscoveryModel.getInstance().setMnc(state.getMnc());
         }
 
         phoneStatusHandler.sendEmptyMessage(connectivityStatus);
@@ -236,69 +212,17 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
     public void onStart() {
         super.onStart();
 
-        Log.d(TAG, "Checking for cached discovery response");
-        vMCC.setText(DiscoveryModel.getInstance().getMcc() != null ? DiscoveryModel.getInstance().getMcc() : getText(R.string.valueUnknown));
-        vMNC.setText(DiscoveryModel.getInstance().getMnc() != null ? DiscoveryModel.getInstance().getMnc() : getText(R.string.valueUnknown));
+        Log.d(TAG, "called onStart");
 
-        if (connectionExists) {
-            if (status == null) {
-                vDiscoveryStatus.setText(getString(R.string.discoveryStatusUnknown));
-                updatePhoneState();
-                DiscoveryStartupSettings startupOption = SettingsActivity.getDiscoveryStartupSettings();
-                if (startupOption != DiscoveryStartupSettings.STARTUP_OPTION_PREEMPTIVE) {
-                    String mcc = SettingsActivity.getMcc();
-                    String mnc = SettingsActivity.getMnc();
+        vMCC.setText(getText(R.string.valueUnknown));
+        vMNC.setText(getText(R.string.valueUnknown));
+        vDiscoveryStatus.setText(getString(R.string.discoveryStatusPending));
+    }
 
-                    Log.d(TAG, mcc + " " + mnc + " " + SettingsActivity.getServingOperator().getMcc());
-                    vMCC.setText(DiscoveryModel.getInstance().getMcc() != null ? DiscoveryModel.getInstance().getMcc() : getText(R.string.valueUnknown));
-                    vMNC.setText(DiscoveryModel.getInstance().getMnc() != null ? DiscoveryModel.getInstance().getMnc() : getText(R.string.valueUnknown));
-
-                    Log.d(TAG, "StartUp options - " + startupOption.toString());
-                    if (startupOption == DiscoveryStartupSettings.STARTUP_OPTION_PASSIVE) {
-                        Log.d(TAG, "Initiating passive discovery");
-
-                        if (SettingsActivity.getServingOperator().isAutomatic()) {
-                            runDiscovery();
-                        } else {
-                            vDiscoveryStatus.setText(getString(R.string.discoveryStatusStarted));
-                        }
-
-                    } else {
-                        //manual discovery
-                        vDiscoveryStatus.setText(getString(R.string.discoveryStatusPending));
-                        if (SettingsActivity.getServingOperator().isAutomatic()) {
-                            DiscoveryModel.getInstance().setMcc(SettingsActivity.getServingOperator().getMcc());
-                            DiscoveryModel.getInstance().setMnc(SettingsActivity.getServingOperator().getMnc());
-                        } else {
-                            DiscoveryModel.getInstance().setMcc(null);
-                            DiscoveryModel.getInstance().setMnc(null);
-                        }
-                        //Log.d(TAG,DiscoveryModel.getInstance().getMcc());
-                        vMCC.setText(DiscoveryModel.getInstance().getMcc() != null ? DiscoveryModel.getInstance().getMcc() : getText(R.string.valueUnknown));
-                        vMNC.setText(DiscoveryModel.getInstance().getMnc() != null ? DiscoveryModel.getInstance().getMnc() : getText(R.string.valueUnknown));
-
-                    }
-                } else {
-                    //Force discovery
-                    if (SettingsActivity.getServingOperator().isAutomatic()) {
-                        runDiscovery();
-                    } else {
-
-                        config.setIdentifiedMCC(null);
-                        config.setIdentifiedMNC(null);
-                        status = discoveryService.callMobileConnectForStartDiscovery(config);
-                        if (status.isOperatorSelection()) {
-                            Log.d(TAG, "Operator Selection required");
-                            discoveryService.doDiscoveryWithWebView(config, this, discoveryHandler, status.getUrl());
-                        }
-                    }
-                }
-            } else {
-                vMCC.setText(DiscoveryModel.getInstance().getMcc());
-                vMNC.setText(DiscoveryModel.getInstance().getMnc());
-            }
-            setButtonStates(status);
-        }
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "called onResume");
     }
 
     /**
@@ -307,21 +231,106 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
     private void runDiscovery() {
         Log.d(TAG, "Run Discovery");
         updatePhoneState();
-        vDiscoveryStatus.setText(getString(R.string.discoveryStatusStarted));
 
-        config.setIdentifiedMCC(DiscoveryModel.getInstance().getMcc());
-        config.setIdentifiedMNC(DiscoveryModel.getInstance().getMnc());
-        status = discoveryService.callMobileConnectForStartDiscovery(config);
-        if (status.isOperatorSelection()) {
-            Log.d(TAG, "Operator Selection required");
-            discoveryService.doDiscoveryWithWebView(config, this, discoveryHandler, status.getUrl());
+        if (connectionExists) {
+            vDiscoveryStatus.setText(getString(R.string.discoveryStatusStarted));
+
+            discoveryService=new DiscoveryService();
+
+            status = discoveryService.callMobileConnectForStartDiscovery(config);
+
+            Log.d(TAG, "Making initial discovery request");
+            Log.d(TAG, "Initial response="+status.toString());
+            if (status.getDiscoveryResponse()!=null && status.getDiscoveryResponse().getResponseData()!=null) {
+                Log.d(TAG, "Response = "+status.getDiscoveryResponse().getResponseData().toString());
+            }
+            if (status.isError()) {
+                String error="Discovery error";
+                Toast toast = Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT);
+                toast.show();
+            } else if (status.isOperatorSelection()) {
+                Log.d(TAG, "Operator Selection required");
+                discoveryService.doDiscoveryWithWebView(config, this, discoveryHandler, status.getUrl());
+            } else {
+                Message msg = new Message();
+                msg.what = R.string.discoveryStatusCompleted;
+                msg.obj = status;
+                discoveryHandler.sendMessage(msg);
+            }
         } else {
-            Message msg = new Message();
-            msg.what = R.string.discoveryStatusCompleted;
-            msg.obj = status;
-            discoveryHandler.sendMessage(msg);
+            String error="Device is not currently connected to the Internet";
+            Toast toast = Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT);
+            toast.show();
         }
 
+    }
+
+    public void runMobileConnectLogin() {
+
+        Log.d(TAG, "Run Mobile Connect Login. Status = "+status);
+        if (status != null) {
+
+            DiscoveryResponse resp = status.getDiscoveryResponse();
+            JsonNode discoveryResponseWrapper = resp.getResponseData();
+            JsonNode discoveryResponse = discoveryResponseWrapper.get("response");
+
+            ParsedOperatorIdentifiedDiscoveryResult parsedOperatorIdentifiedDiscoveryResult = JsonUtils.parseOperatorIdentifiedDiscoveryResult(resp.getResponseData());
+
+            String authorizationHref = parsedOperatorIdentifiedDiscoveryResult.getAuthorizationHref();
+            String tokenHref = parsedOperatorIdentifiedDiscoveryResult.getTokenHref();
+
+            Log.d(TAG, "authorizationHref="+authorizationHref);
+            Log.d(TAG, "tokenHref="+tokenHref);
+
+            String encryptedMSISDN = DiscoveryModel.getInstance().getEncryptedMSISDN();
+            HashMap<String, Object> authOptions = new HashMap<String, Object>();
+            if (encryptedMSISDN != null) {
+                String hint = "ENCR_MSISDN:" + encryptedMSISDN;
+                Log.d(TAG, "Setting login_hint to " + hint);
+                authOptions.put("login_hint", hint);
+            }
+
+            try {
+                Log.d(TAG, "getting client_id from discovery response " + discoveryResponse.toString());
+                String clientId = AndroidJsonUtils.getExpectedStringValue(discoveryResponse, "client_id");
+                Log.d(TAG, "clientId = " + clientId);
+
+                String clientSecret = AndroidJsonUtils.getExpectedStringValue(discoveryResponse, "client_secret");
+
+                String openIDConnectScopes = "openid";
+
+                String returnUri = config.getApplicationURL();
+                String state = UUID.randomUUID().toString();
+                String nonce = UUID.randomUUID().toString();
+                int maxAge = 3600;
+                String acrValues = "2";
+
+                config.setDiscoveryRedirectURL(returnUri);
+                config.setAuthorizationState(state);
+
+                if (parsedOperatorIdentifiedDiscoveryResult == null || parsedOperatorIdentifiedDiscoveryResult.getAuthorizationHref() == null) {
+                    String error;
+                    if (config.getIdentifiedMCC() != null) {
+                        error = "Authorisation URI for MMC/MNC not known";
+                    } else {
+                        error = "Authorisation failed because MMC/MNC not found";
+                    }
+                    Toast toast = Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+
+                    authorizationService = new AuthorizationService();
+
+                    Log.d(TAG, "Starting OpenIDConnect authorization");
+                    authorizationService.authorize(config, authorizationHref, clientId, clientSecret, openIDConnectScopes, returnUri, state, nonce,
+                            maxAge, acrValues, this, this, resp, authOptions);
+                }
+            } catch (NoFieldException nfe) {
+                Log.e(TAG, "NoFieldException handling");
+            } catch (UnsupportedEncodingException ueo) {
+                Log.e(TAG, "UnsupportedEncodingException handling");
+            }
+        }
     }
 
     /*
@@ -335,113 +344,13 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
     }
 
     /**
-     * Update the button states.
-     *
-     * @param status
-     */
-    private void setButtonStates(MobileConnectStatus status) {
-        Log.d(TAG, "Setting button states");
-
-        if (status == null) {
-            startOperatorId.setVisibility(View.INVISIBLE);
-            discoveryButton.setEnabled(true);
-        } else {
-            startOperatorId.setVisibility(status.isStartAuthorization() ? View.VISIBLE : View.INVISIBLE);
-            discoveryButton.setEnabled(false);
-        }
-    }
-
-    /**
-     * The Settings Activity
-     *
-     * @param view
-     */
-    public void startSettings(View view) {
-        Intent intent = new Intent(
-                this,
-                SettingsActivity.class);
-        startActivity(intent);
-    }
-
-    /**
-     * Attempt to get the Auth URI based on either automatic or user provided information. This will lauch
-     * a WebView to capture the information if required.
-     *
-     * @param view
-     */
-    public void handleDiscovery(View view) {
-
-        updatePhoneState();
-        vDiscoveryStatus.setText(getString(R.string.discoveryStatusStarted));
-        DiscoveryStartupSettings startupOption = SettingsActivity.getDiscoveryStartupSettings();
-        if (startupOption == DiscoveryStartupSettings.STARTUP_OPTION_MANUAL) {
-            if (SettingsActivity.getServingOperator().isAutomatic()) {
-                runDiscovery();
-            } else if (!SettingsActivity.getServingOperator().isAutomatic()) {
-
-                config.setIdentifiedMCC(null);
-                config.setIdentifiedMNC(null);
-                status = discoveryService.callMobileConnectForStartDiscovery(config);
-                if (status.isOperatorSelection()) {
-                    Log.d(TAG, "Operator Selection required");
-                    discoveryService.doDiscoveryWithWebView(config, this, discoveryHandler, status.getUrl());
-                }
-            }
-        } else {
-            DiscoveryModel.getInstance().setMcc(SettingsActivity.getServingOperator().getMcc());
-            DiscoveryModel.getInstance().setMnc(SettingsActivity.getServingOperator().getMnc());
-            runDiscovery();
-        }
-        setButtonStates(status);
-    }
-
-    /**
      * Called from the Layout XML. This is the button click response that initiates Authorisation.
      *
      * @param view
      * @throws UnsupportedEncodingException
      */
     public void startOperatorId(View view) throws UnsupportedEncodingException {
-        if (status != null) {
-
-            DiscoveryResponse resp = status.getDiscoveryResponse();
-
-            String openIDConnectScopes = "openid";
-
-            //  String returnUri=getMobileConnectConfig().getAuthorizationRedirectURL();
-            String returnUri = "https://localhost:8080";
-            String clientId = config.getClientId();
-            String clientSecret = config.getClientSecret();
-            String state = UUID.randomUUID().toString();
-            String nonce = UUID.randomUUID().toString();
-            int maxAge = 3600;
-            String acrValues = "2";
-
-            config.setDiscoveryRedirectURL(returnUri);
-            config.setAuthorizationState(state);
-
-
-            maxAge = 0;
-
-            ParsedOperatorIdentifiedDiscoveryResult parsedOperatorIdentifiedDiscoveryResult = JsonUtils.parseOperatorIdentifiedDiscoveryResult(resp.getResponseData());
-            if (parsedOperatorIdentifiedDiscoveryResult == null || parsedOperatorIdentifiedDiscoveryResult.getAuthorizationHref() == null) {
-                String error;
-                if (config.getIdentifiedMCC() != null) {
-                    error = "Authorisation URI for MMC/MNC not known";
-                } else {
-                    error = "Authorisation failed because MMC/MNC not found";
-                }
-                Toast toast = Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT);
-                toast.show();
-            } else {
-                String authorizationHref = parsedOperatorIdentifiedDiscoveryResult.getAuthorizationHref();
-
-                Log.d(TAG, "Starting OpenIDConnect authorization");
-                authorizationService.authorize(config, authorizationHref, clientId, clientSecret, openIDConnectScopes, returnUri, state, nonce,
-                        maxAge, acrValues, this, this, resp);
-            }
-
-        }
+        runDiscovery();
     }
 
     /**
