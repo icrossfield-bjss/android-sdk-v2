@@ -366,6 +366,8 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
      */
     public void authorizationCodeResponse(String state, String authorizationCode, String error, String clientId, String clientSecret, String scopes, String returnUri) {
 
+        Log.d(TAG, "received code response "+authorizationCode);
+
         DiscoveryResponse resp = status.getDiscoveryResponse();
 
         ParsedOperatorIdentifiedDiscoveryResult parsedOperatorIdentifiedDiscoveryResult = AndroidJsonUtils.parseOperatorIdentifiedDiscoveryResult(resp.getResponseData());
@@ -392,6 +394,8 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
         String clientSecret = config.getClientSecret();
         String openIDConnectScopes = config.getAuthorizationScope();
         String returnUri = config.getDiscoveryRedirectURL();
+
+        Log.d(TAG, "received token response "+tokenResponse.toString());
 
         String token;
         String error;

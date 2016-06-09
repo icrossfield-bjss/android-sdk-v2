@@ -111,5 +111,9 @@
 	<string name="authorizationCompleteLocaleValue"></string>
 	<string name="authorizationCompleteRestart">Restart</string>
 	
-	
+	<string name="authorizationCompleteTokenLabel">Returned Access Token</string>
+	<string name="authorizationCompleteTokenValue">None</string>
+	<string name="authorizationCompletePCRLabel">Returned PCR (sub)</string>
+	<string name="authorizationCompletePCRValue">None</string>
+
 </resources>

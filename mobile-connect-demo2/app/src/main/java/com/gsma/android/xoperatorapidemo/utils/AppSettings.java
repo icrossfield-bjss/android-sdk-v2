@@ -19,9 +19,6 @@ public class AppSettings {
      * during the authorization process and is used to pass control (and information) back to your
      * application.
      */
-//    private static String discoveryURL="https://discover.mobileconnect.io/gsma/v2/discovery";
-//    private static String discoveryClientID="CnlwTezNhkeXxkAq77OXrmEZEUoSjG63";
-//    private static String discoveryClientSecret="DbpCO2fIK8ux01Qp";
 
     private static String discoveryURL="http://discovery.sandbox2.mobileconnect.io/v2/discovery";
     private static String discoveryClientID="bc25c661-3c6e-45ee-9870-a5c84574f3d2";

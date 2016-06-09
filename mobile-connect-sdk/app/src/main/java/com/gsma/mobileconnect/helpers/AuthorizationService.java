@@ -321,6 +321,37 @@ public class AuthorizationService extends BaseService
             });
             view.setWebViewClient(new WebViewClient() {
 
+                private void handleCompletion(WebView view, String url) {
+
+                    ParameterList parameters=ParameterList.getKeyValuesFromUrl(url, 0);
+
+                    String state=parameters.getValue("state");
+                    String code=parameters.getValue("code");
+                    String error=parameters.getValue("error");
+
+                    Log.d(TAG, "state = "+state);
+                    Log.d(TAG, "code = "+code);
+                    Log.d(TAG, "error = "+error);
+                    Log.d(TAG, "Redirect URL " + url);
+                    DiscoveryModel.getInstance().setDiscoveryServiceRedirectedURL(url);
+                    config.setAuthorizationState(state);
+
+                    AuthorizationService connect = new AuthorizationService();
+                    MobileConnectStatus mobileConnectStatus = connect.callMobileConnectOnAuthorizationRedirect(config,response);
+
+
+                    notifyListener(mobileConnectStatus, listener);
+
+                    if ((code!=null && code.trim().length()>0) && (error==null || error.trim().length()==0) && _state.equalsIgnoreCase(state)) {
+
+                        view.stopLoading();
+
+                    }
+
+                    view.setVisibility(View.INVISIBLE);
+                    view.destroy();
+                }
+
                 /*
                  * This is a stub - could be extended to handle error situations
                  * by returning to a relevant application screen
@@ -339,6 +370,19 @@ public class AuthorizationService extends BaseService
                     view.setVisibility(View.INVISIBLE);
                     view.destroy();
 
+                }
+
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url){
+                    Log.d(TAG, "shouldOverrideUrlLoading url=" + url);
+                    boolean status=false;
+                    if (url != null && url.startsWith(redirectUri)) {
+                        status=true;
+                        handleCompletion(view, url);
+                    } else {
+                        view.loadUrl(url);
+                    }
+                    return status;
                 }
 
                 /*
@@ -362,34 +406,7 @@ public class AuthorizationService extends BaseService
 					 * retrieve the actual discovery token
 					 */
                     if (url != null && url.startsWith(redirectUri)) {
-
-                        ParameterList parameters=ParameterList.getKeyValuesFromUrl(url, 0);
-
-                        String state=parameters.getValue("state");
-                        String code=parameters.getValue("code");
-                        String error=parameters.getValue("error");
-
-                        Log.d(TAG, "state = "+state);
-                        Log.d(TAG, "code = "+code);
-                        Log.d(TAG, "error = "+error);
-                        Log.d(TAG, "Redirect URL " + url);
-                        DiscoveryModel.getInstance().setDiscoveryServiceRedirectedURL(url);
-                        config.setAuthorizationState(state);
-
-                        AuthorizationService connect = new AuthorizationService();
-                        MobileConnectStatus mobileConnectStatus = connect.callMobileConnectOnAuthorizationRedirect(config,response);
-
-
-                        notifyListener(mobileConnectStatus, listener);
-
-                        if ((code!=null && code.trim().length()>0) && (error==null || error.trim().length()==0) && _state.equalsIgnoreCase(state)) {
-
-                            view.stopLoading();
-
-                        }
-
-                        view.setVisibility(View.INVISIBLE);
-                        view.destroy();
+                        handleCompletion(view, url);
                     }
                 }
 

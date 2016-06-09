@@ -45,8 +45,8 @@ public class AuthorizationCompleteActivity extends Activity implements UserInfoL
 
 	TextView statusField = null;
 
-	TextView authorizationCompleteEmailValue = null;
-	TextView authorizationCompleteSubValue = null;
+	TextView authorizationCompleteTokenValue = null;
+	TextView authorizationCompletePCRValue = null;
 
 	boolean setEmail=false;
 
@@ -66,6 +66,9 @@ public class AuthorizationCompleteActivity extends Activity implements UserInfoL
 		setContentView(R.layout.activity_identity_authorization_complete);
 		
 		statusField = (TextView) findViewById(R.id.authorizationCompleteStatus);
+
+		authorizationCompleteTokenValue = (TextView) findViewById(R.id.authorizationCompleteTokenValue);
+		authorizationCompletePCRValue = (TextView) findViewById(R.id.authorizationCompletePCRValue);
 	}
 
 	/*
@@ -75,6 +78,11 @@ public class AuthorizationCompleteActivity extends Activity implements UserInfoL
 	 */
 	public void onStart() {
 		super.onStart();
+
+		authorizationCompleteTokenValue.setText(getString(R.string.authorizationCompleteTokenValue));
+		authorizationCompletePCRValue.setText(getString(R.string.authorizationCompletePCRValue));
+
+        Log.d(TAG, "called onStart");
 
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
@@ -124,12 +132,13 @@ public class AuthorizationCompleteActivity extends Activity implements UserInfoL
 	}
 
 	public void tokenResponse(RequestTokenResponse response) {
-		//Log.d(TAG, "received token response");
+		Log.d(TAG, "received token response");
 		String access_token=response.getResponseData().get_access_token();
 		boolean haveAccessToken=false;
 		if (access_token!=null && access_token.trim().length()>0) {
 			statusField.setText("retrieved access token");
 			haveAccessToken=true;
+			authorizationCompleteTokenValue.setText(access_token);
 		} else {
 			statusField.setText("access token not received");
 		}
@@ -143,14 +152,9 @@ public class AuthorizationCompleteActivity extends Activity implements UserInfoL
 				//Log.d(TAG, "decoded to "+dec);
 				try {
 					JSONObject json=new JSONObject(dec);
-					String email=json.has("email")?json.getString("email"):null;
-					if (email!=null && email.trim().length()>0) {
-						authorizationCompleteEmailValue.setText(email);
-						setEmail=true;
-					}
 					String sub=json.has("sub")?json.getString("sub"):null;
 					if (sub!=null && sub.trim().length()>0) {
-						authorizationCompleteSubValue.setText(sub);
+						authorizationCompletePCRValue.setText(sub);
 					}
 				} catch (JSONException e) {
 				}

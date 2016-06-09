@@ -215,6 +215,32 @@ public class DiscoveryService extends BaseService
         });
         view.setWebViewClient(new WebViewClient() {
 
+            private void handleResult(WebView view, String url) {
+                DiscoveryModel.getInstance().setDiscoveryServiceRedirectedURL(url);
+                view.stopLoading();
+                view.setVisibility(View.INVISIBLE);
+                view.destroy();
+                if(DiscoveryModel.getInstance().getDiscoveryServiceRedirectedURL() != null) {
+                    MobileConnectStatus status =  callMobileConnectOnDiscoveryRedirect(config);
+                    Message message = new Message();
+                    message.obj = status;
+                    discoveryHandler.dispatchMessage(message);
+                }
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url){
+                Log.d(TAG, "shouldOverrideUrlLoading "+url);
+                boolean status=false;
+                if (url != null && url.contains("mcc_mnc=")) {
+                    status=true;
+                    handleResult(view, url);
+                } else {
+                    view.loadUrl(url);
+                }
+                return status;
+            }
+
             @Override
             public void onReceivedError(WebView view, int errorCode,
                                         String description, String failingUrl) {
@@ -248,18 +274,7 @@ public class DiscoveryService extends BaseService
 							 */
 
                 if (url != null && url.contains("mcc_mnc=")) {
-
-                    DiscoveryModel.getInstance().setDiscoveryServiceRedirectedURL(url);
-                    view.stopLoading();
-                    view.setVisibility(View.INVISIBLE);
-                    view.destroy();
-                    if(DiscoveryModel.getInstance().getDiscoveryServiceRedirectedURL() != null) {
-                        MobileConnectStatus status =  callMobileConnectOnDiscoveryRedirect(config);
-                        Message message = new Message();
-                        message.obj = status;
-                        discoveryHandler.dispatchMessage(message);
-                    }
-
+                    handleResult(view, url);
                 }
             }
 
