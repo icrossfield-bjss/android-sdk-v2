@@ -30,7 +30,7 @@ public class AppSettings {
      * This URL is opened at the end of the discovery phase - it doesn't specifically need to be
      * changed, and it doesn't need to exist for the SDK to recognise discovery is complete.
      */
-    private static String discoveryRedirectURL="http://localhost/discoveryComplete.html";
+    private static String discoveryRedirectURL="http://discovery.sandbox2.mobileconnect.io/discoveryComplete.html";
 
     public static String getDiscoveryClientID() {
         return discoveryClientID;

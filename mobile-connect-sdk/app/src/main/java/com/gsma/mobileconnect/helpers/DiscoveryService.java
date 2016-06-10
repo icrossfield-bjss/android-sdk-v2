@@ -217,9 +217,19 @@ public class DiscoveryService extends BaseService
 
             private void handleResult(WebView view, String url) {
                 DiscoveryModel.getInstance().setDiscoveryServiceRedirectedURL(url);
+
                 view.stopLoading();
+
+                final ViewGroup viewGroup = (ViewGroup) view.getParent();
+                if (viewGroup != null)
+                {
+                    viewGroup.removeView(view);
+                }
+                view.removeAllViews();
+
                 view.setVisibility(View.INVISIBLE);
                 view.destroy();
+
                 if(DiscoveryModel.getInstance().getDiscoveryServiceRedirectedURL() != null) {
                     MobileConnectStatus status =  callMobileConnectOnDiscoveryRedirect(config);
                     Message message = new Message();
@@ -233,7 +243,6 @@ public class DiscoveryService extends BaseService
                 Log.d(TAG, "shouldOverrideUrlLoading "+url);
                 boolean status=false;
                 if (url != null && url.contains("mcc_mnc=")) {
-                    status=true;
                     handleResult(view, url);
                 } else {
                     view.loadUrl(url);

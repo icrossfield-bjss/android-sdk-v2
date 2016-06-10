@@ -339,14 +339,16 @@ public class AuthorizationService extends BaseService
                     AuthorizationService connect = new AuthorizationService();
                     MobileConnectStatus mobileConnectStatus = connect.callMobileConnectOnAuthorizationRedirect(config,response);
 
-
                     notifyListener(mobileConnectStatus, listener);
 
-                    if ((code!=null && code.trim().length()>0) && (error==null || error.trim().length()==0) && _state.equalsIgnoreCase(state)) {
+                    view.stopLoading();
 
-                        view.stopLoading();
-
+                    final ViewGroup viewGroup = (ViewGroup) view.getParent();
+                    if (viewGroup != null)
+                    {
+                        viewGroup.removeView(view);
                     }
+                    view.removeAllViews();
 
                     view.setVisibility(View.INVISIBLE);
                     view.destroy();
@@ -377,7 +379,6 @@ public class AuthorizationService extends BaseService
                     Log.d(TAG, "shouldOverrideUrlLoading url=" + url);
                     boolean status=false;
                     if (url != null && url.startsWith(redirectUri)) {
-                        status=true;
                         handleCompletion(view, url);
                     } else {
                         view.loadUrl(url);
