@@ -341,17 +341,17 @@ public class AuthorizationService extends BaseService
 
                     notifyListener(mobileConnectStatus, listener);
 
-                    view.stopLoading();
-
-                    final ViewGroup viewGroup = (ViewGroup) view.getParent();
-                    if (viewGroup != null)
-                    {
-                        viewGroup.removeView(view);
-                    }
-                    view.removeAllViews();
+//                    view.stopLoading();
+//
+//                    final ViewGroup viewGroup = (ViewGroup) view.getParent();
+//                    if (viewGroup != null)
+//                    {
+//                        viewGroup.removeView(view);
+//                    }
+//                    view.removeAllViews();
 
                     view.setVisibility(View.INVISIBLE);
-                    view.destroy();
+//                    view.destroy();
                 }
 
                 /*

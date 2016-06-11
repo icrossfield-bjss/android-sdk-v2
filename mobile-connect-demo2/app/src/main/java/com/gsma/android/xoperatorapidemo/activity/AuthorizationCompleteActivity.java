@@ -3,20 +3,14 @@ package com.gsma.android.xoperatorapidemo.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.gsma.android.R;
-import com.gsma.mobileconnect.helpers.AuthorizationService;
 import com.gsma.mobileconnect.helpers.RetrieveUserinfoTask;
 import com.gsma.mobileconnect.helpers.UserInfo;
 import com.gsma.mobileconnect.helpers.UserInfoListener;
-import com.gsma.mobileconnect.oidc.RequestTokenResponse;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /*
  * initiate the process of sign-in using the OperatorID API. 
@@ -42,6 +36,8 @@ public class AuthorizationCompleteActivity extends Activity implements UserInfoL
 	String state = null;
 	String code = null;
 	String error = null;
+    String accessToken = null;
+    String PCR = null;
 
 	TextView statusField = null;
 
@@ -51,7 +47,7 @@ public class AuthorizationCompleteActivity extends Activity implements UserInfoL
 	boolean setEmail=false;
 
 	private static final String NA ="not available";
-	AuthorizationService service = new AuthorizationService();
+//	AuthorizationService service = new AuthorizationService();
 
 	/*
 	 * method called when this activity is created - handles the receiving of
@@ -79,10 +75,8 @@ public class AuthorizationCompleteActivity extends Activity implements UserInfoL
 	public void onStart() {
 		super.onStart();
 
-		authorizationCompleteTokenValue.setText(getString(R.string.authorizationCompleteTokenValue));
-		authorizationCompletePCRValue.setText(getString(R.string.authorizationCompletePCRValue));
-
-        Log.d(TAG, "called onStart");
+        authorizationCompleteTokenValue.setText(getString(R.string.authorizationCompleteTokenValue));
+        authorizationCompletePCRValue.setText(getString(R.string.authorizationCompletePCRValue));
 
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
@@ -99,10 +93,16 @@ public class AuthorizationCompleteActivity extends Activity implements UserInfoL
 			clientId = extras.getString("clientId");
 			clientSecret = extras.getString("clientSecret");
 
+            accessToken = extras.getString("accessToken");
+            PCR = extras.getString("PCR");
 
+            if (accessToken!=null) {
+                authorizationCompleteTokenValue.setText(accessToken);
+            }
+            if (PCR!=null) {
+                authorizationCompletePCRValue.setText(PCR);
+            }
 
-			//Log.d(TAG, "handling code="+code+" error="+error);
-			
 			String statusDescription="Unknown";
 			boolean authorized=false;
 			if (code!=null && code.trim().length()>0) {
@@ -129,49 +129,6 @@ public class AuthorizationCompleteActivity extends Activity implements UserInfoL
 	public void home(View view) {
 		Intent intent = new Intent(authorizationCompleteActivityInstance, MainActivity.class);
 		startActivity(intent);
-	}
-
-	public void tokenResponse(RequestTokenResponse response) {
-		Log.d(TAG, "received token response");
-		String access_token=response.getResponseData().get_access_token();
-		boolean haveAccessToken=false;
-		if (access_token!=null && access_token.trim().length()>0) {
-			statusField.setText("retrieved access token");
-			haveAccessToken=true;
-			authorizationCompleteTokenValue.setText(access_token);
-		} else {
-			statusField.setText("access token not received");
-		}
-		String id_token = response.getResponseData().get_access_token();
-		if (id_token!=null && id_token.trim().length()>0) {
-			String[] id_token_parts=id_token.split("\\.");
-			if (id_token_parts!=null && id_token_parts.length>=2) {
-				String idValue=id_token_parts[1];
-				byte[] decoded=Base64.decode(idValue, Base64.DEFAULT);
-				String dec=new String(decoded);
-				//Log.d(TAG, "decoded to "+dec);
-				try {
-					JSONObject json=new JSONObject(dec);
-					String sub=json.has("sub")?json.getString("sub"):null;
-					if (sub!=null && sub.trim().length()>0) {
-						authorizationCompletePCRValue.setText(sub);
-					}
-				} catch (JSONException e) {
-				}
-			}					
-		}
-
-	}
-
-
-	public void errorToken(JSONObject error) {
-		statusField.setText("error retrieving access token");
-	}
-
-
-
-	public void errorUserinfo(JSONObject error) {
-		statusField.setText("error retrieving userinfo");
 	}
 
 	@Override

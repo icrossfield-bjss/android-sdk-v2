@@ -34,6 +34,7 @@ import com.gsma.mobileconnect.helpers.DiscoveryService;
 import com.gsma.mobileconnect.helpers.MobileConnectConfig;
 import com.gsma.mobileconnect.helpers.MobileConnectStatus;
 import com.gsma.mobileconnect.model.DiscoveryModel;
+import com.gsma.mobileconnect.oidc.ParsedIdToken;
 import com.gsma.mobileconnect.oidc.RequestTokenResponse;
 import com.gsma.mobileconnect.utils.AndroidJsonUtils;
 import com.gsma.mobileconnect.utils.JsonUtils;
@@ -353,20 +354,8 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
         runDiscovery();
     }
 
-    /**
-     * Process the Auth response. This will launch a new Activity to display the UserInfo
-     *
-     * @param state
-     * @param authorizationCode
-     * @param error
-     * @param clientId
-     * @param clientSecret
-     * @param scopes
-     * @param returnUri
-     */
-    public void authorizationCodeResponse(String state, String authorizationCode, String error, String clientId, String clientSecret, String scopes, String returnUri) {
-
-        Log.d(TAG, "received code response "+authorizationCode);
+    public void displayAuthorizationResponse(String state, String authorizationCode, String error, String clientId, String clientSecret, String scopes, String returnUri,
+                                             String accessToken, String PCR) {
 
         DiscoveryResponse resp = status.getDiscoveryResponse();
 
@@ -382,6 +371,8 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
         intent.putExtra("clientSecret", clientSecret);
         intent.putExtra("scopes", scopes);
         intent.putExtra("returnUri", returnUri);
+        intent.putExtra("accessToken", accessToken);
+        intent.putExtra("PCR", PCR);
         intent.putExtra("userinfoUri", parsedOperatorIdentifiedDiscoveryResult.getUserInfoHref());
 
         startActivity(intent);
@@ -395,26 +386,31 @@ public class MainActivity extends Activity implements AuthorizationListener, Vie
         String openIDConnectScopes = config.getAuthorizationScope();
         String returnUri = config.getDiscoveryRedirectURL();
 
-        Log.d(TAG, "received token response "+tokenResponse.toString());
-
-        String token;
+        String accessToken;
         String error;
+        String pcr=null;
         if (tokenResponse.hasErrorResponse()) {
-            token = null;
+            accessToken = null;
             error = tokenResponse.getErrorResponse().get_error();
         } else {
-            token = tokenResponse.getResponseData().get_access_token();
+            accessToken = tokenResponse.getResponseData().get_access_token();
+            ParsedIdToken idtoken = tokenResponse.getResponseData().getParsedIdToken();
+            if (idtoken!=null) {
+                pcr = idtoken.get_pcr();
+            }
 
+            Log.d(TAG, "access_token="+accessToken);
+            Log.d(TAG, "pcr="+pcr);
             error = null;
         }
 
-        authorizationCodeResponse(state, token, error, clientId, clientSecret, openIDConnectScopes, returnUri);
+        displayAuthorizationResponse(state, accessToken, error, clientId, clientSecret, openIDConnectScopes, returnUri, accessToken, pcr);
     }
 
     @Override
     public void authorizationFailed(MobileConnectStatus mobileConnectStatus) {
         Log.d(TAG, "AuthorizationFailed");
-        Toast authorizationFailed = Toast.makeText(getApplicationContext(), "AuthorizationFailed", Toast.LENGTH_SHORT);
+        Toast authorizationFailed = Toast.makeText(getApplicationContext(), "Authorization Failed : "+mobileConnectStatus.getError(), Toast.LENGTH_SHORT);
         authorizationFailed.show();
     }
 }

@@ -218,17 +218,17 @@ public class DiscoveryService extends BaseService
             private void handleResult(WebView view, String url) {
                 DiscoveryModel.getInstance().setDiscoveryServiceRedirectedURL(url);
 
-                view.stopLoading();
-
-                final ViewGroup viewGroup = (ViewGroup) view.getParent();
-                if (viewGroup != null)
-                {
-                    viewGroup.removeView(view);
-                }
-                view.removeAllViews();
+//                view.stopLoading();
+//
+//                final ViewGroup viewGroup = (ViewGroup) view.getParent();
+//                if (viewGroup != null)
+//                {
+//                    viewGroup.removeView(view);
+//                }
+//                view.removeAllViews();
 
                 view.setVisibility(View.INVISIBLE);
-                view.destroy();
+//                view.destroy();
 
                 if(DiscoveryModel.getInstance().getDiscoveryServiceRedirectedURL() != null) {
                     MobileConnectStatus status =  callMobileConnectOnDiscoveryRedirect(config);
