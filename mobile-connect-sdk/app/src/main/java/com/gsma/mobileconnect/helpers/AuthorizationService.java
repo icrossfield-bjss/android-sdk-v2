@@ -339,9 +339,11 @@ public class AuthorizationService extends BaseService
                     AuthorizationService connect = new AuthorizationService();
                     MobileConnectStatus mobileConnectStatus = connect.callMobileConnectOnAuthorizationRedirect(config,response);
 
+                    view.stopLoading();
+                    view.setVisibility(View.INVISIBLE);
+
                     notifyListener(mobileConnectStatus, listener);
 
-//                    view.stopLoading();
 //
 //                    final ViewGroup viewGroup = (ViewGroup) view.getParent();
 //                    if (viewGroup != null)
@@ -350,7 +352,6 @@ public class AuthorizationService extends BaseService
 //                    }
 //                    view.removeAllViews();
 
-                    view.setVisibility(View.INVISIBLE);
 //                    view.destroy();
                 }
 

@@ -218,7 +218,7 @@ public class DiscoveryService extends BaseService
             private void handleResult(WebView view, String url) {
                 DiscoveryModel.getInstance().setDiscoveryServiceRedirectedURL(url);
 
-//                view.stopLoading();
+                view.stopLoading();
 //
 //                final ViewGroup viewGroup = (ViewGroup) view.getParent();
 //                if (viewGroup != null)
