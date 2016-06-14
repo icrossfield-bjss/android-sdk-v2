@@ -280,13 +280,13 @@ public class AuthorizationService extends BaseService
             requestUri += "&client_id=" + URLEncoder.encode(clientId, charSet);
             requestUri += "&scope=" + URLEncoder.encode(scopes, charSet);
             requestUri += "&redirect_uri="
-                    + URLEncoder.encode(redirectUri);
+                    + URLEncoder.encode(redirectUri, charSet);
             requestUri += "&state=" + URLEncoder.encode(state, charSet);
             requestUri += "&nonce=" + URLEncoder.encode(nonce, charSet);
             //  requestUri += "&prompt=" + URLEncoder.encode(prompt.value(), charSet);
             requestUri += "&max_age="
                     + URLEncoder.encode(Integer.toString(maxAge), charSet);
-            requestUri += "&acr_values=" + URLEncoder.encode(acrValues);
+            requestUri += "&acr_values=" + URLEncoder.encode(acrValues, charSet);
             if (hmapExtraOptions != null && hmapExtraOptions.size() > 0) {
                 for (String key : hmapExtraOptions.keySet()) {
                     requestUri += "&"
