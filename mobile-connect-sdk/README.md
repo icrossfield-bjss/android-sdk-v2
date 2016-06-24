@@ -28,7 +28,7 @@ Recommended Setup
 
 -----------------
 
-Android Studio 2.+
+Android Studio
 
 Mac - Java Development Kit (JDK) 6
 
