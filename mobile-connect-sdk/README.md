@@ -14,19 +14,33 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 AGREE TO INDEMNIFY AND HOLD HARMLESS THE AUTHORS AND COPYRIGHT HOLDERS FROM AND AGAINST ANY SUCH LIABILITY.
 
 
-Mobile Connect SDK
-------------------
+## Mobile Connect Android SDK
 
-The Mobile Connect SDK uses Gradle build the Android Archive (AAR)
+This README supercedes any others in this project tree.
 
-This is generated into the following destinations once built:
+## Motivation
 
-app/build/outputs/aar/mobile-connect-android-sdk-debug.aar
-app/build/outputs/aar/mobile-connect-android-sdk-release.aar
+Mobile Connect Android SDK is designed to help developers quickly bootstrap their own solutions by seeing how it works and what is required.
 
+## Installation
 
-Build Instructions
-------------------
+Recommended Setup
 
-gradle build
+-----------------
+
+Android Studio 2.+
+
+Mac - Java Development Kit (JDK) 6
+
+Windows - Java Development Kit (JDK) 8
+
+Linux - Java Development Kit (JDK) 8
+
+-----------------
+
+## Support
+
+Any issues, please send us a message here: https://developer.mobileconnect.io/content/contact-us
+
+Enjoy using Mobile Connect!
 
