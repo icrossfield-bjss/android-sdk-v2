@@ -19,58 +19,10 @@ Mobile Connect SDK
 This demo project has been built with Android Studio, it can be built by importing it into Android Studio and
 running "gradle build".
 
-The Android SDK is included as an Android Archive Module (AAR)
+The SDK is imported as an Android Archive Module (AAR)
 
-Customising the Demo App
-------------------------
-This demo app is configured out of the box to use a set of demonstration application credentials. You will need to replace
-these with application credentials created using the GSMA Mobile Connect developer portal (developer.mobileconnect.io)
-
-The following changes need to be made
-
-1/ In the file app/src/main/assets/demo.properties
-   - Replace config.applicationURL with the 'Redirect URL' that you will be registering on the GSMA Mobile Connect developer 
-     when you provision your application.
-   - Replace (only if you want) config.discoveryRedirectURL with a URL that will be used at the end of the discovery process. 
-     Note generally what is in this URL is not important so unless you really want to it's recommended to leave this as is.
-
-2/ In the file app/src/main/java/com.gsma.android/xoperatorapidemo/discovery/DiscoveryDeveloperOperatorSettings.java you 
-   will see there are two sets of application credentials provisioned. These should be replaced with credentials issued
-   by the GSMA Mobile Connect developer portal when you provision your application
-   - You will see two sets of 'settings' are coded allowing you to put in both production and development mode credentials.
-     These will be displayed when you run the demo app. Initially you should just replace the development mode credentials with
-     your own (issued from the developer portal) and comment out the production ones, or use the sandbox details from the dev
-     portal.
-   - Make sure to have the correct URL for the Discovery Service, and the Client Key and Secret issued by the dev portal 
-     to replace the details that are already hard coded
-   - You can change the name of the settings to suit your own requirements, this is simply displayed in the demo app 
 
 Build Instructions
 ------------------
 
-Build under Android Studio or from the command line use 
-
 gradle build
-
-Running Instructions
---------------------
-
-It's recommended to run via Android Studio so that you can see the demo app logging
-
-1/ Run the app
-2/ Click settings
-2a/ Under developer operator choose a setting you've customised as above
-2b/ Under serving operaotor select 'No auto assist'
-2c/ Uncheck 'Send MCC/MNC in discovery'
-2d/ Check 'Send cookies if using webview'
-2e/ Under Discovery Startup Option' choose 'Manually Controlled Discovery'
-2f/ Click 'Clear Discovery/ Logo Cache'
-2g/ Press the back button
-3/ Press discover - and enter your mobile number/ select the operator (this happens in a webview)
-4/ When discovery is complete you should see a new button appear 'Connect via operator' - press this and you will be 
-   taken throught the Mobile Connect OpenID API calls 
-
-In case of problems
--------------------
-
-Please get in touch with us via https://developer.mobileconnect.io/content/contact-us 

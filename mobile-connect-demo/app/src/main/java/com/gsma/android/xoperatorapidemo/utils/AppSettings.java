@@ -21,6 +21,7 @@ public class AppSettings
      * application.
      */
 
+    // Use msisdn +447700900250 or replace the following credentials with your own working credentials
     private static String discoveryURL = "http://discovery.sandbox2.mobileconnect.io/v2/discovery";
 
     private static String discoveryClientID = "66742a85-2282-4747-881d-ed5b7bd74d2d";
