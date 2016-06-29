@@ -21,11 +21,11 @@ public class AppSettings
      * application.
      */
 
-    private static String discoveryURL = "https://reference.mobileconnect.io/discovery/";
+    private static String discoveryURL = "http://discovery.sandbox2.mobileconnect.io/v2/discovery";
 
-    private static String discoveryClientID = "ZWRhNjU3OWI3MGIwYTRh";
+    private static String discoveryClientID = "66742a85-2282-4747-881d-ed5b7bd74d2d";
 
-    private static String discoveryClientSecret = "NjQzZTBhZWM0YmQ4ZDQ5";
+    private static String discoveryClientSecret = "f15199f4-b658-4e58-8bb3-e40998873392";
 
     private static String applicationRedirectURL = "http://localhost:8001/mobileconnect.html";
 
@@ -33,7 +33,7 @@ public class AppSettings
      * This URL is opened at the end of the discovery phase - it doesn't specifically need to be
      * changed, and it doesn't need to exist for the SDK to recognise discovery is complete.
      */
-    private static String discoveryRedirectURL = "http://discovery.sandbox2.mobileconnect.io/discoveryComplete.html";
+    private static String discoveryRedirectURL = "http://localhost:8001/mobileconnect.html";
 
     public static String getDiscoveryClientID()
     {
