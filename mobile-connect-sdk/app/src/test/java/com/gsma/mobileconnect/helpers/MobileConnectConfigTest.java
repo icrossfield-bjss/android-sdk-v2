@@ -22,11 +22,15 @@ import com.gsma.mobileconnect.discovery.DiscoveryOptions;
 import com.gsma.mobileconnect.discovery.IPreferences;
 import com.gsma.mobileconnect.oidc.AuthenticationOptions;
 import com.gsma.mobileconnect.oidc.TokenOptions;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class MobileConnectConfigTest
@@ -261,6 +265,5 @@ public class MobileConnectConfigTest
         assertEquals(defaultTimeout, options.getTimeout());
         assertEquals(defaultCheckIdTokenSignature, options.isCheckIdTokenSignature());
     }
-
 
 }

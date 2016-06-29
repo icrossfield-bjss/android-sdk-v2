@@ -6,7 +6,8 @@ import com.gsma.mobileconnect.helpers.MobileConnectConfig;
 /*
  * Customise the settings in this file in order to use your own application details
  */
-public class AppSettings {
+public class AppSettings
+{
 
 
     /*
@@ -20,39 +21,47 @@ public class AppSettings {
      * application.
      */
 
-    private static String discoveryURL="http://discovery.sandbox2.mobileconnect.io/v2/discovery";
-    private static String discoveryClientID="bc25c661-3c6e-45ee-9870-a5c84574f3d2";
-    private static String discoveryClientSecret="8511782b-7c28-4c79-950b-64f3e8a1a97a";
+    private static String discoveryURL = "https://reference.mobileconnect.io/discovery/";
 
-    private static String applicationRedirectURL="http://mc.mobilesites.net/walkthrough.html";
+    private static String discoveryClientID = "ZWRhNjU3OWI3MGIwYTRh";
+
+    private static String discoveryClientSecret = "NjQzZTBhZWM0YmQ4ZDQ5";
+
+    private static String applicationRedirectURL = "http://localhost:8001/mobileconnect.html";
 
     /*
      * This URL is opened at the end of the discovery phase - it doesn't specifically need to be
      * changed, and it doesn't need to exist for the SDK to recognise discovery is complete.
      */
-    private static String discoveryRedirectURL="http://discovery.sandbox2.mobileconnect.io/discoveryComplete.html";
+    private static String discoveryRedirectURL = "http://discovery.sandbox2.mobileconnect.io/discoveryComplete.html";
 
-    public static String getDiscoveryClientID() {
+    public static String getDiscoveryClientID()
+    {
         return discoveryClientID;
     }
 
-    public static String getDiscoveryClientSecret() {
+    public static String getDiscoveryClientSecret()
+    {
         return discoveryClientSecret;
     }
 
-    public static String getApplicationRedirectURL() {
+    public static String getApplicationRedirectURL()
+    {
         return applicationRedirectURL;
     }
 
-    public static String getDiscoveryURL() {
+    public static String getDiscoveryURL()
+    {
         return discoveryURL;
     }
 
-    public static String getDiscoveryRedirectURL() {
+    public static String getDiscoveryRedirectURL()
+    {
         return discoveryRedirectURL;
     }
 
-    public static MobileConnectConfig getMobileConnectConfig() {
+    public static MobileConnectConfig getMobileConnectConfig()
+    {
 
         MobileConnectConfig mobileConnectConfig = new MobileConnectConfig();
 
@@ -68,7 +77,8 @@ public class AppSettings {
         // URL of the Mobile Connect Discovery End Point
         mobileConnectConfig.setDiscoveryURL(discoveryURL);
 
-        // URL to inform the Discovery End Point to redirect to, this should route to the "/discovery_redirect" handler below
+        // URL to inform the Discovery End Point to redirect to, this should route to the "/discovery_redirect"
+        // handler below
         mobileConnectConfig.setDiscoveryRedirectURL(discoveryRedirectURL);
 
         DiscoveryService service = new DiscoveryService();

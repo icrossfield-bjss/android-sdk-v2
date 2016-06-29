@@ -3,8 +3,6 @@ package com.gsma.android.xoperatorapidemo.utils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.widget.Toast;
 
 /**
  * extract useful phone state information and return in the form of a PhoneState
@@ -57,7 +55,7 @@ public class PhoneUtils {
 
 
 
-		
+
 		/*
 		 * get the SIM serial number
 		 */
