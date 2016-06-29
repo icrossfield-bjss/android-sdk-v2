@@ -8,9 +8,11 @@ import java.util.UUID;
  * Base Class for the Services.
  * Created by nick.copley on 03/03/2016.
  */
-public class BaseService {
+public class BaseService
+{
 
     private static final int HTTP_OK = 200;
+
     private static final int HTTP_ACCEPTED = 202;
 
     /**
@@ -21,7 +23,7 @@ public class BaseService {
      */
     public String generateUniqueString(String prefix)
     {
-        if(null == prefix)
+        if (null == prefix)
         {
             prefix = "";
         }
@@ -49,7 +51,4 @@ public class BaseService {
     {
         return (null != mobileConnectState && null != mobileConnectState.getDiscoveryResponse());
     }
-
-
-
 }

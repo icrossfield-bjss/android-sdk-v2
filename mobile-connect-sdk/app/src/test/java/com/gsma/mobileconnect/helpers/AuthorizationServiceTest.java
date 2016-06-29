@@ -69,7 +69,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
 @RunWith(RobolectricTestRunner.class)
 public class AuthorizationServiceTest
 {
@@ -93,7 +92,8 @@ public class AuthorizationServiceTest
         // URL of the Mobile Connect Discovery End Point
         config.setDiscoveryURL("http://discovery.sandbox2.mobileconnect.io/v2/discovery");
 
-        // URL to inform the Discovery End Point to redirect to, this should route to the "/discovery_redirect" handler below
+        // URL to inform the Discovery End Point to redirect to, this should route to the "/discovery_redirect"
+        // handler below
         config.setDiscoveryRedirectURL("http://localhost:8080/mobileconnect/discovery_redirect");
 
         // Authorization State would typically set to a unique value
@@ -105,8 +105,8 @@ public class AuthorizationServiceTest
     }
 
     @Test
-    public void callMobileConnectForStartDiscovery_whenDiscoveryThrowsException_returnedStatusShouldBeError()
-            throws DiscoveryException
+    public void callMobileConnectForStartDiscovery_whenDiscoveryThrowsException_returnedStatusShouldBeError() throws
+                                                                                                              DiscoveryException
     {
         // GIVEN
         IDiscovery mockedDiscovery = mock(IDiscovery.class);
@@ -125,12 +125,12 @@ public class AuthorizationServiceTest
     }
 
     @Test
-    public void callMobileConnectForStartDiscovery_whenDiscoveryResultsInError_returnedStatusShouldBeError()
-            throws DiscoveryException
+    public void callMobileConnectForStartDiscovery_whenDiscoveryResultsInError_returnedStatusShouldBeError() throws
+                                                                                                             DiscoveryException
     {
         // GIVEN
         IDiscovery mockedDiscovery = mock(IDiscovery.class);
-        
+
         DiscoveryService connect = new DiscoveryService();
         // return error from startAutomatedOperatorDiscovery
         int responseCode = 404;
@@ -153,8 +153,9 @@ public class AuthorizationServiceTest
     }
 
     @Test
-    public void callMobileConnectForStartDiscovery_whenDiscoveryResultsInOperatorNotIdentified_returnedStatusShouldBeOperatorSelection()
-            throws DiscoveryException
+    public void
+    callMobileConnectForStartDiscovery_whenDiscoveryResultsInOperatorNotIdentified_returnedStatusShouldBeOperatorSelection() throws
+                                                                                                                                         DiscoveryException
     {
         // GIVEN
         IDiscovery mockedDiscovery = mock(IDiscovery.class);
@@ -179,10 +180,10 @@ public class AuthorizationServiceTest
         assertEquals(expectedUrl, status.getUrl());
     }
 
-
     @Test
-    public void callMobileConnectForStartDiscovery_whenDiscoveryResultsInAuthorization_returnedStatusShouldBeAuthorization()
-            throws DiscoveryException
+    public void
+    callMobileConnectForStartDiscovery_whenDiscoveryResultsInAuthorization_returnedStatusShouldBeAuthorization() throws
+                                                                                                                             DiscoveryException
     {
         // GIVEN
         IDiscovery mockedDiscovery = mock(IDiscovery.class);
@@ -206,7 +207,9 @@ public class AuthorizationServiceTest
 
     @Test
     public void callMobileConnectOnDiscoveryRedirect_whenDiscoveryThrowsURIException_returnedStatusShouldBeError()
-            throws DiscoveryException, URISyntaxException
+            throws
+                                                                                                                   DiscoveryException,
+                                                                                                                   URISyntaxException
     {
         // GIVEN
         IDiscovery mockedDiscovery = mock(IDiscovery.class);
@@ -228,8 +231,10 @@ public class AuthorizationServiceTest
     }
 
     @Test
-    public void callMobileConnectOnDiscoveryRedirect_whenRedirectHasNoOperatorDetails_returnedStatusShouldBeStartDiscovery()
-            throws DiscoveryException, URISyntaxException
+    public void
+    callMobileConnectOnDiscoveryRedirect_whenRedirectHasNoOperatorDetails_returnedStatusShouldBeStartDiscovery() throws
+                                                                                                                             DiscoveryException,
+                                                                                                                             URISyntaxException
     {
         // GIVEN
         IDiscovery mockedDiscovery = mock(IDiscovery.class);
@@ -248,8 +253,10 @@ public class AuthorizationServiceTest
     }
 
     @Test
-    public void callMobileConnectOnDiscoveryRedirect_whenCompleteSelectedOperatorDiscoveryThrowsDiscoveryException_returnedStatusShouldBeError()
-            throws DiscoveryException, URISyntaxException
+    public void
+    callMobileConnectOnDiscoveryRedirect_whenCompleteSelectedOperatorDiscoveryThrowsDiscoveryException_returnedStatusShouldBeError() throws
+                                                                                                                                                 DiscoveryException,
+                                                                                                                                                 URISyntaxException
     {
         // GIVEN
         IDiscovery mockedDiscovery = mock(IDiscovery.class);
@@ -275,8 +282,10 @@ public class AuthorizationServiceTest
     }
 
     @Test
-    public void callMobileConnectOnDiscoveryRedirect_whenCompleteSelectedOperatorDiscoveryResultsInError_returnedStatusShouldBeError()
-            throws DiscoveryException, URISyntaxException
+    public void
+    callMobileConnectOnDiscoveryRedirect_whenCompleteSelectedOperatorDiscoveryResultsInError_returnedStatusShouldBeError() throws
+                                                                                                                                       DiscoveryException,
+                                                                                                                                       URISyntaxException
     {
         // GIVEN
         IDiscovery mockedDiscovery = mock(IDiscovery.class);
@@ -308,8 +317,10 @@ public class AuthorizationServiceTest
     }
 
     @Test
-    public void callMobileConnectOnDiscoveryRedirect_whenCompleteSelectedOperatorDiscoveryResultsInOperatorNotIdentified_returnedStatusShouldBeStartDiscovery()
-            throws DiscoveryException, URISyntaxException
+    public void
+    callMobileConnectOnDiscoveryRedirect_whenCompleteSelectedOperatorDiscoveryResultsInOperatorNotIdentified_returnedStatusShouldBeStartDiscovery() throws
+                                                                                                                                                                DiscoveryException,
+                                                                                                                                                                URISyntaxException
     {
         // GIVEN
         IDiscovery mockedDiscovery = mock(IDiscovery.class);
@@ -335,8 +346,10 @@ public class AuthorizationServiceTest
     }
 
     @Test
-    public void callMobileConnectOnDiscoveryRedirect_whenCompleteSelectedOperatorDiscoveryResultsInAuthorization_returnedStatusShouldBeStartAuthorization()
-            throws DiscoveryException, URISyntaxException
+    public void
+    callMobileConnectOnDiscoveryRedirect_whenCompleteSelectedOperatorDiscoveryResultsInAuthorization_returnedStatusShouldBeStartAuthorization() throws
+                                                                                                                                                            DiscoveryException,
+                                                                                                                                                            URISyntaxException
     {
         // GIVEN
         IDiscovery mockedDiscovery = mock(IDiscovery.class);
@@ -362,14 +375,10 @@ public class AuthorizationServiceTest
         assertEquals(expectedDiscoveryResponse, status.getDiscoveryResponse());
     }
 
-
-
-
-
-
     @Test
-    public void callMobileConnectOnAuthorizationRedirect_whenNoDiscoveryInSession_returnedStatusShouldBeStartDiscovery()
-            throws OIDCException
+    public void
+    callMobileConnectOnAuthorizationRedirect_whenNoDiscoveryInSession_returnedStatusShouldBeStartDiscovery() throws
+                                                                                                                         OIDCException
     {
         // GIVEN
         IOIDC mockedOIDC = mock(IOIDC.class);
@@ -385,8 +394,11 @@ public class AuthorizationServiceTest
     }
 
     @Test
-    public void callMobileConnectOnAuthorizationRedirect_whenParsedAuthorizationResponseHasError_returnedStatusShouldBeError()
-            throws OIDCException, DiscoveryResponseExpiredException
+    public void
+    callMobileConnectOnAuthorizationRedirect_whenParsedAuthorizationResponseHasError_returnedStatusShouldBeError()
+            throws
+                                                                                                                               OIDCException,
+                                                                                                                               DiscoveryResponseExpiredException
     {
         // GIVEN
         IOIDC mockedOIDC = mock(IOIDC.class);
@@ -407,7 +419,8 @@ public class AuthorizationServiceTest
         mockParseAuthenticationResponseSuccess(mockedOIDC, parsedAuthorizationResponse);
 
         // WHEN
-        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config, expectedDiscoveryResponse);
+        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config,
+                                                                                      expectedDiscoveryResponse);
 
         // THEN
         assertTrue(status.isError());
@@ -416,8 +429,9 @@ public class AuthorizationServiceTest
     }
 
     @Test
-    public void callMobileConnectOnAuthorizationRedirect_whenStatesDoNotMatch_returnedStatusShouldBeError()
-            throws OIDCException, DiscoveryResponseExpiredException
+    public void callMobileConnectOnAuthorizationRedirect_whenStatesDoNotMatch_returnedStatusShouldBeError() throws
+                                                                                                            OIDCException,
+                                                                                                            DiscoveryResponseExpiredException
     {
         // GIVEN
         IOIDC mockedOIDC = mock(IOIDC.class);
@@ -435,17 +449,20 @@ public class AuthorizationServiceTest
         mockParseAuthenticationResponseSuccess(mockedOIDC, parsedAuthorizationResponse);
 
         // WHEN
-        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config, expectedDiscoveryResponse);
+        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config,
+                                                                                      expectedDiscoveryResponse);
 
         // THEN
         assertTrue(status.isError());
-        assertEquals( "Invalid authentication response", status.getError());
+        assertEquals("Invalid authentication response", status.getError());
         assertEquals("State values do not match", status.getDescription());
     }
 
     @Test
-    public void callMobileConnectOnAuthorizationRedirect_whenRequestTokenDiscoveryResponseExpired_returnedStatusShouldBeStartDiscovery()
-            throws OIDCException, DiscoveryResponseExpiredException
+    public void
+    callMobileConnectOnAuthorizationRedirect_whenRequestTokenDiscoveryResponseExpired_returnedStatusShouldBeStartDiscovery() throws
+                                                                                                                                         OIDCException,
+                                                                                                                                         DiscoveryResponseExpiredException
     {
         // GIVEN
         IOIDC mockedOIDC = mock(IOIDC.class);
@@ -467,7 +484,8 @@ public class AuthorizationServiceTest
         mockRequestTokenThrowsException(mockedOIDC, new DiscoveryResponseExpiredException("TEST"));
 
         // WHEN
-        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config,expectedDiscoveryResponse);
+        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config,
+                                                                                      expectedDiscoveryResponse);
 
         // THEN
         assertTrue(status.isStartDiscovery());
@@ -475,7 +493,9 @@ public class AuthorizationServiceTest
 
     @Test
     public void callMobileConnectOnAuthorizationRedirect_whenRequestThrowsOIDCException_returnedStatusShouldBeError()
-            throws OIDCException, DiscoveryResponseExpiredException
+            throws
+                                                                                                                      OIDCException,
+                                                                                                                      DiscoveryResponseExpiredException
     {
         // GIVEN
         IOIDC mockedOIDC = mock(IOIDC.class);
@@ -484,7 +504,7 @@ public class AuthorizationServiceTest
 
         // set up valid session
         DiscoveryResponse expectedDiscoveryResponse = new DiscoveryResponse(false, null, 200, null, null);
-       String state = config.getAuthorizationState();
+        String state = config.getAuthorizationState();
         MobileConnectState sessionState = new MobileConnectState(expectedDiscoveryResponse, null, state, null);
 
 
@@ -498,19 +518,21 @@ public class AuthorizationServiceTest
         mockRequestTokenThrowsException(mockedOIDC, expectedException);
 
         // WHEN
-        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config,expectedDiscoveryResponse);
+        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config,
+                                                                                      expectedDiscoveryResponse);
 
         // THEN
         assertTrue(status.isError());
 
-        assertEquals( "Failed to obtain a token.", status.getError());
-        assertEquals( "Failed to obtain an authentication token from the operator.", status.getDescription());
+        assertEquals("Failed to obtain a token.", status.getError());
+        assertEquals("Failed to obtain an authentication token from the operator.", status.getDescription());
         assertEquals(expectedException, status.getException());
     }
 
     @Test
-    public void callMobileConnectOnAuthorizationRedirect_whenFailedResponseCode_returnedStatusShouldBeError()
-            throws OIDCException, DiscoveryResponseExpiredException
+    public void callMobileConnectOnAuthorizationRedirect_whenFailedResponseCode_returnedStatusShouldBeError() throws
+                                                                                                              OIDCException,
+                                                                                                              DiscoveryResponseExpiredException
     {
         // GIVEN
         IOIDC mockedOIDC = mock(IOIDC.class);
@@ -541,7 +563,8 @@ public class AuthorizationServiceTest
         mockRequestTokenSuccess(mockedOIDC, expectedRequestTokenResponse);
 
         // WHEN
-        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config,expectedDiscoveryResponse);
+        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config,
+                                                                                      expectedDiscoveryResponse);
 
         // THEN
         assertTrue(status.isError());
@@ -553,8 +576,9 @@ public class AuthorizationServiceTest
     }
 
     @Test
-    public void callMobileConnectOnAuthorizationRedirect_whenErrorTokenResponse_returnedStatusShouldBeError()
-            throws OIDCException, DiscoveryResponseExpiredException
+    public void callMobileConnectOnAuthorizationRedirect_whenErrorTokenResponse_returnedStatusShouldBeError() throws
+                                                                                                              OIDCException,
+                                                                                                              DiscoveryResponseExpiredException
     {
         // GIVEN
         IOIDC mockedOIDC = mock(IOIDC.class);
@@ -586,7 +610,8 @@ public class AuthorizationServiceTest
 
 
         // WHEN
-        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config,expectedDiscoveryResponse);
+        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config,
+                                                                                      expectedDiscoveryResponse);
 
         // THEN
         assertTrue(status.isError());
@@ -598,7 +623,9 @@ public class AuthorizationServiceTest
 
     @Test
     public void callMobileConnectOnAuthorizationRedirect_whenRequestTokenSucceeds_returnedStatusShouldBeComplete()
-            throws OIDCException, DiscoveryResponseExpiredException
+            throws
+                                                                                                                   OIDCException,
+                                                                                                                   DiscoveryResponseExpiredException
     {
         // GIVEN
         IOIDC mockedOIDC = mock(IOIDC.class);
@@ -623,7 +650,8 @@ public class AuthorizationServiceTest
         mockRequestTokenSuccess(mockedOIDC, expectedRequestTokenResponse);
 
         // WHEN
-        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config,expectedDiscoveryResponse);
+        MobileConnectStatus status = connect.callMobileConnectOnAuthorizationRedirect(config,
+                                                                                      expectedDiscoveryResponse);
 
         // THEN
         assertTrue(status.isComplete());
@@ -785,27 +813,37 @@ public class AuthorizationServiceTest
         verify(listener, times(0)).tokenReceived(Mockito.any(RequestTokenResponse.class));
     }
 
-
-
-    private void mockStartAutomatedOperatorDiscoverySuccess(IDiscovery mockedDiscovery, final DiscoveryResponse discoveryResponse) throws DiscoveryException
+    private void mockStartAutomatedOperatorDiscoverySuccess(IDiscovery mockedDiscovery,
+                                                            final DiscoveryResponse discoveryResponse) throws
+                                                                                                       DiscoveryException
     {
         doAnswer(new Answer()
         {
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable
             {
                 Object[] args = invocationOnMock.getArguments();
-                IDiscoveryResponseCallback callback = (IDiscoveryResponseCallback)args[4];
+                IDiscoveryResponseCallback callback = (IDiscoveryResponseCallback) args[4];
                 callback.completed(discoveryResponse);
                 return null;
             }
-        }).when(mockedDiscovery).startAutomatedOperatorDiscovery(any(IPreferences.class),
-                anyString(), any(DiscoveryOptions.class), Matchers.<List<KeyValuePair>>any(), any(IDiscoveryResponseCallback.class));
+        }).when(mockedDiscovery)
+          .startAutomatedOperatorDiscovery(any(IPreferences.class),
+                                           anyString(),
+                                           any(DiscoveryOptions.class),
+                                           Matchers.<List<KeyValuePair>>any(),
+                                           any(IDiscoveryResponseCallback.class));
     }
 
-    private void mockStartAutomatedOperatorDiscoveryThrowException(IDiscovery mockedDiscovery, DiscoveryException expectedException) throws DiscoveryException
+    private void mockStartAutomatedOperatorDiscoveryThrowException(IDiscovery mockedDiscovery,
+                                                                   DiscoveryException expectedException) throws
+                                                                                                         DiscoveryException
     {
-        doThrow(expectedException).when(mockedDiscovery).startAutomatedOperatorDiscovery(any(IPreferences.class),
-                anyString(), any(DiscoveryOptions.class), Matchers.<List<KeyValuePair>>any(), any(IDiscoveryResponseCallback.class));
+        doThrow(expectedException).when(mockedDiscovery)
+                                  .startAutomatedOperatorDiscovery(any(IPreferences.class),
+                                                                   anyString(),
+                                                                   any(DiscoveryOptions.class),
+                                                                   Matchers.<List<KeyValuePair>>any(),
+                                                                   any(IDiscoveryResponseCallback.class));
     }
 
     private void mockExtractOperatorSelectionURL(IDiscovery mockedDiscovery, String expectedUrl)
@@ -813,88 +851,139 @@ public class AuthorizationServiceTest
         when(mockedDiscovery.extractOperatorSelectionURL(any(DiscoveryResponse.class))).thenReturn(expectedUrl);
     }
 
-    private void mockParseDiscoveryRedirectSuccess(IDiscovery mockedDiscovery, final ParsedDiscoveryRedirect parsedDiscoveryRedirect) throws URISyntaxException
+    private void mockParseDiscoveryRedirectSuccess(IDiscovery mockedDiscovery,
+                                                   final ParsedDiscoveryRedirect parsedDiscoveryRedirect) throws
+                                                                                                          URISyntaxException
     {
         doAnswer(new Answer()
         {
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable
             {
                 Object[] args = invocationOnMock.getArguments();
-                IParsedDiscoveryRedirectCallback callback = (IParsedDiscoveryRedirectCallback)args[1];
+                IParsedDiscoveryRedirectCallback callback = (IParsedDiscoveryRedirectCallback) args[1];
                 callback.completed(parsedDiscoveryRedirect);
                 return null;
             }
-        }).when(mockedDiscovery).parseDiscoveryRedirect(anyString(),
-                any(IParsedDiscoveryRedirectCallback.class));
+        }).when(mockedDiscovery).parseDiscoveryRedirect(anyString(), any(IParsedDiscoveryRedirectCallback.class));
     }
 
-    private void mockParseDiscoveryRedirectThrowsException(IDiscovery mockedDiscovery, URISyntaxException expectedException) throws URISyntaxException
+    private void mockParseDiscoveryRedirectThrowsException(IDiscovery mockedDiscovery,
+                                                           URISyntaxException expectedException) throws
+                                                                                                 URISyntaxException
     {
-        doThrow(expectedException).when(mockedDiscovery).parseDiscoveryRedirect(anyString(), any(IParsedDiscoveryRedirectCallback.class));
+        doThrow(expectedException).when(mockedDiscovery)
+                                  .parseDiscoveryRedirect(anyString(), any(IParsedDiscoveryRedirectCallback.class));
     }
 
-    private void mockCompleteSelectedOperatorDiscoverySuccess(IDiscovery mockedDiscovery, final DiscoveryResponse discoveryResponse) throws DiscoveryException
+    private void mockCompleteSelectedOperatorDiscoverySuccess(IDiscovery mockedDiscovery,
+                                                              final DiscoveryResponse discoveryResponse) throws
+                                                                                                         DiscoveryException
     {
         doAnswer(new Answer()
         {
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable
             {
                 Object[] args = invocationOnMock.getArguments();
-                IDiscoveryResponseCallback callback = (IDiscoveryResponseCallback)args[6];
+                IDiscoveryResponseCallback callback = (IDiscoveryResponseCallback) args[6];
                 callback.completed(discoveryResponse);
                 return null;
             }
-        }).when(mockedDiscovery).completeSelectedOperatorDiscovery(any(IPreferences.class),
-                anyString(), anyString(), anyString(),
-                any(CompleteSelectedOperatorDiscoveryOptions.class), Matchers.<List<KeyValuePair>>any(), any(IDiscoveryResponseCallback.class));
+        }).when(mockedDiscovery)
+          .completeSelectedOperatorDiscovery(any(IPreferences.class),
+                                             anyString(),
+                                             anyString(),
+                                             anyString(),
+                                             any(CompleteSelectedOperatorDiscoveryOptions.class),
+                                             Matchers.<List<KeyValuePair>>any(),
+                                             any(IDiscoveryResponseCallback.class));
     }
 
-    private void mockCompleteSelectedOperatorDiscoveryThrowsException(IDiscovery mockedDiscovery, DiscoveryException expectedException) throws DiscoveryException
+    private void mockCompleteSelectedOperatorDiscoveryThrowsException(IDiscovery mockedDiscovery,
+                                                                      DiscoveryException expectedException) throws
+                                                                                                            DiscoveryException
     {
-        doThrow(expectedException).when(mockedDiscovery).completeSelectedOperatorDiscovery( any(IPreferences.class),
-                anyString(), anyString(), anyString(),
-                any(CompleteSelectedOperatorDiscoveryOptions.class), Matchers.<List<KeyValuePair>>any(), any(IDiscoveryResponseCallback.class));
+        doThrow(expectedException).when(mockedDiscovery)
+                                  .completeSelectedOperatorDiscovery(any(IPreferences.class),
+                                                                     anyString(),
+                                                                     anyString(),
+                                                                     anyString(),
+                                                                     any(CompleteSelectedOperatorDiscoveryOptions
+                                                                                 .class),
+                                                                     Matchers.<List<KeyValuePair>>any(),
+                                                                     any(IDiscoveryResponseCallback.class));
     }
 
-    private void mockIsOperatorSelectionRequired(IDiscovery mockedDiscovery, DiscoveryResponse discoveryResponse, boolean t)
+    private void mockIsOperatorSelectionRequired(IDiscovery mockedDiscovery,
+                                                 DiscoveryResponse discoveryResponse,
+                                                 boolean t)
     {
         when(mockedDiscovery.isOperatorSelectionRequired(discoveryResponse)).thenReturn(t);
     }
 
-    private void mockStartAuthenticationSuccess(IOIDC mockedOIDC, final StartAuthenticationResponse startAuthenticationResponse) throws OIDCException, DiscoveryResponseExpiredException
+    private void mockStartAuthenticationSuccess(IOIDC mockedOIDC,
+                                                final StartAuthenticationResponse startAuthenticationResponse) throws
+                                                                                                               OIDCException,
+                                                                                                               DiscoveryResponseExpiredException
     {
         doAnswer(new Answer()
         {
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable
             {
                 Object[] args = invocationOnMock.getArguments();
-                IStartAuthenticationCallback callback = (IStartAuthenticationCallback)args[9];
+                IStartAuthenticationCallback callback = (IStartAuthenticationCallback) args[9];
                 callback.complete(startAuthenticationResponse);
                 return null;
             }
-        }).when(mockedOIDC).startAuthentication(any(DiscoveryResponse.class), anyString(), anyString(), anyString(), anyString(), anyInt(), anyString(), anyString(), any(AuthenticationOptions.class), any(IStartAuthenticationCallback.class));
+        }).when(mockedOIDC)
+          .startAuthentication(any(DiscoveryResponse.class),
+                               anyString(),
+                               anyString(),
+                               anyString(),
+                               anyString(),
+                               anyInt(),
+                               anyString(),
+                               anyString(),
+                               any(AuthenticationOptions.class),
+                               any(IStartAuthenticationCallback.class));
     }
 
-    private void mockStartAuthenticationThrowsException(IOIDC mockedOIDC, Exception expectedException) throws OIDCException, DiscoveryResponseExpiredException
+    private void mockStartAuthenticationThrowsException(IOIDC mockedOIDC, Exception expectedException) throws
+                                                                                                       OIDCException,
+                                                                                                       DiscoveryResponseExpiredException
     {
-        doThrow(expectedException).when(mockedOIDC).startAuthentication(any(DiscoveryResponse.class), anyString(), anyString(), anyString(), anyString(), anyInt(), anyString(), anyString(), any(AuthenticationOptions.class), any(IStartAuthenticationCallback.class));
+        doThrow(expectedException).when(mockedOIDC)
+                                  .startAuthentication(any(DiscoveryResponse.class),
+                                                       anyString(),
+                                                       anyString(),
+                                                       anyString(),
+                                                       anyString(),
+                                                       anyInt(),
+                                                       anyString(),
+                                                       anyString(),
+                                                       any(AuthenticationOptions.class),
+                                                       any(IStartAuthenticationCallback.class));
     }
 
-    private void mockParseAuthenticationResponseSuccess(IOIDC mockedOIDC, final ParsedAuthorizationResponse parsedAuthorizationResponse) throws OIDCException
+    private void mockParseAuthenticationResponseSuccess(IOIDC mockedOIDC,
+                                                        final ParsedAuthorizationResponse
+                                                                parsedAuthorizationResponse) throws
+                                                                                                                       OIDCException
     {
         doAnswer(new Answer()
         {
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable
             {
                 Object[] args = invocationOnMock.getArguments();
-                IParseAuthenticationResponseCallback callback = (IParseAuthenticationResponseCallback)args[1];
+                IParseAuthenticationResponseCallback callback = (IParseAuthenticationResponseCallback) args[1];
                 callback.complete(parsedAuthorizationResponse);
                 return null;
             }
         }).when(mockedOIDC).parseAuthenticationResponse(anyString(), any(IParseAuthenticationResponseCallback.class));
     }
 
-    private void mockRequestTokenSuccess(IOIDC mockedOIDC, final RequestTokenResponse requestTokenResponse) throws OIDCException, DiscoveryResponseExpiredException
+    private void mockRequestTokenSuccess(IOIDC mockedOIDC, final RequestTokenResponse requestTokenResponse) throws
+                                                                                                            OIDCException,
+                                                                                                            DiscoveryResponseExpiredException
     {
         doAnswer(new Answer()
         {
@@ -905,15 +994,30 @@ public class AuthorizationServiceTest
                 callback.complete(requestTokenResponse);
                 return null;
             }
-        }).when(mockedOIDC).requestToken(any(DiscoveryResponse.class), anyString(), anyString(), any(TokenOptions.class), any(IRequestTokenCallback.class));
+        }).when(mockedOIDC)
+          .requestToken(any(DiscoveryResponse.class),
+                        anyString(),
+                        anyString(),
+                        any(TokenOptions.class),
+                        any(IRequestTokenCallback.class));
     }
 
-    private void mockRequestTokenThrowsException(IOIDC mockedOIDC, Exception ex) throws OIDCException, DiscoveryResponseExpiredException
+    private void mockRequestTokenThrowsException(IOIDC mockedOIDC, Exception ex) throws
+                                                                                 OIDCException,
+                                                                                 DiscoveryResponseExpiredException
     {
-        doThrow(ex).when(mockedOIDC).requestToken(any(DiscoveryResponse.class), anyString(), anyString(), any(TokenOptions.class), any(IRequestTokenCallback.class));
+        doThrow(ex).when(mockedOIDC)
+                   .requestToken(any(DiscoveryResponse.class),
+                                 anyString(),
+                                 anyString(),
+                                 any(TokenOptions.class),
+                                 any(IRequestTokenCallback.class));
     }
 
-    private void mockGetErrorResponse(IDiscovery mockedDiscovery, DiscoveryResponse discoveryResponse, String expectedError, String expectedErrorDescription)
+    private void mockGetErrorResponse(IDiscovery mockedDiscovery,
+                                      DiscoveryResponse discoveryResponse,
+                                      String expectedError,
+                                      String expectedErrorDescription)
     {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.set_error(expectedError);

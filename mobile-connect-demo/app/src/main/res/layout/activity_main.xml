@@ -2,16 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context=".MainActivity"
+    tools:context="com.gsma.android.xoperatorapidemo.activity.MainActivity"
     android:clickable="true"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:id="@+id/mainActivity"
 
 	>
-
-	<include layout="@layout/discovery_web_view"/>
-	<include layout="@layout/auth_web_view"/>
 
     <TextView
         android:id="@+id/startText"
@@ -45,15 +42,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             >
-            <TextView
-		        android:id="@+id/labelOperatorID"
-		        android:layout_width="80dp"
-		        android:layout_height="wrap_content"
-		        android:layout_marginLeft="5dp"
-		        android:layout_marginTop="0dp"
-		        android:textStyle="bold"
-		        android:text="@string/labelOperatorID"
-		        android:textAppearance="?android:attr/textAppearanceSmall" />
             <Button
 		        android:id="@+id/startOperatorId"
 		        android:layout_width="wrap_content"
@@ -205,30 +193,5 @@
 		</LinearLayout>
     
     </LinearLayout>
-    
-    
-    <Button
-        android:id="@+id/settingsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="5dp"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="5dp"
-        android:onClick="startSettings"
-        android:text="@string/settingsButton" />
-
-    <Button
-        android:id="@+id/discoveryButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="5dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="5dp"
-        android:onClick="handleDiscovery"
-        android:text="@string/discoveryButton" />
 
 </RelativeLayout>

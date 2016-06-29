@@ -16,19 +16,12 @@
  */
 package com.gsma.mobileconnect.helpers;
 
-import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v7.widget.LinearLayoutCompat;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.LayoutInflater;
 import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.gsma.android.mobileconnect.R;
 import com.gsma.mobileconnect.discovery.CompleteSelectedOperatorDiscoveryOptions;
@@ -43,9 +36,10 @@ import com.gsma.mobileconnect.utils.AndroidRestClient;
 import com.gsma.mobileconnect.utils.ErrorResponse;
 import com.gsma.mobileconnect.utils.RestClient;
 import com.gsma.mobileconnect.utils.StringUtils;
+import com.gsma.mobileconnect.view.DiscoveryAuthenticationDialog;
+import com.gsma.mobileconnect.view.InteractableWebView;
 
 import java.net.URISyntaxException;
-import java.util.HashMap;
 
 /**
  * Class to wrap the Discovery related calls to the Mobile Connect SDK.
@@ -54,74 +48,86 @@ public class DiscoveryService extends BaseService
 {
     private static final String TAG = DiscoveryService.class.getName();
 
+    private String name = "";
+
     private IDiscovery discovery;
 
-    public DiscoveryService() {
+    public DiscoveryService()
+    {
         RestClient client = new AndroidRestClient();
         discovery = new AndroidDiscoveryImpl(null, client);
     }
 
     private static final String MOBILE_CONNECT_SESSION_LOCK = "gsma:mc:session_lock";
+
     private static final String MOBILE_CONNECT_SESSION_KEY = "gsma:mc:session_key";
+
     private static final Object LOCK_OBJECT = new Object();
 
     private static final String X_FORWARDED_FOR_HEADER = "X-FORWARDED-FOR";
-    private static final String SET_COOKIE_HEADER = "set-cookie";
 
+    private static final String SET_COOKIE_HEADER = "set-cookie";
 
     private static final String INTERNAL_ERROR_CODE = "internal error";
 
-
     /**
      * This method is called to initiate the Mobile Connect process.
-     *
-     * The return is either an 'error', 'operator selection is required' or 'authorization can start' (the operator has been identified).
+     * <p>
+     * The return is either an 'error', 'operator selection is required' or 'authorization can start' (the operator
+     * has been identified).
      *
      * @param config Mobile Connect Configuration instance
      * @return A status object
      */
     public MobileConnectStatus callMobileConnectForStartDiscovery(MobileConnectConfig config)
     {
-
         DiscoveryResponse discoveryResponse;
         try
         {
             DiscoveryOptions options = config.getDiscoveryOptions("Mobile");
 
             CaptureDiscoveryResponse captureDiscoveryResponse = new CaptureDiscoveryResponse();
-            discovery.startAutomatedOperatorDiscovery(config, config.getDiscoveryRedirectURL(),
-                    options, null, captureDiscoveryResponse);
+            discovery.startAutomatedOperatorDiscovery(config,
+                                                      config.getDiscoveryRedirectURL(),
+                                                      options,
+                                                      null,
+                                                      captureDiscoveryResponse);
             discoveryResponse = captureDiscoveryResponse.getDiscoveryResponse();
-            CompleteSelectedOperatorDiscoveryOptions optionsSelected = config.getCompleteSelectedOperatorDiscoveryOptions();
-     }
-        catch(DiscoveryException ex)
+            CompleteSelectedOperatorDiscoveryOptions optionsSelected = config
+                    .getCompleteSelectedOperatorDiscoveryOptions();
+        }
+        catch (DiscoveryException ex)
         {
             return MobileConnectStatus.error(INTERNAL_ERROR_CODE, "Failed to obtain operator details.", ex);
         }
 
-        if(!discoveryResponse.isCached())
+        if (!discoveryResponse.isCached())
         {
-            if(!isSuccessResponseCode(discoveryResponse.getResponseCode()))
+            if (!isSuccessResponseCode(discoveryResponse.getResponseCode()))
             {
                 ErrorResponse errorResponse = getErrorResponse(discoveryResponse);
-                return MobileConnectStatus.error(errorResponse.get_error(), errorResponse.get_error_description(), discoveryResponse);
+                return MobileConnectStatus.error(errorResponse.get_error(),
+                                                 errorResponse.get_error_description(),
+                                                 discoveryResponse);
             }
         }
 
-        // The DiscoveryResponse may contain the operator endpoints in which case we can proceed to authorization with an operator.
+        // The DiscoveryResponse may contain the operator endpoints in which case we can proceed to authorization
+        // with an operator.
         String operatorSelectionURL = discovery.extractOperatorSelectionURL(discoveryResponse);
-        if(!StringUtils.isNullOrEmpty(operatorSelectionURL))
+        if (!StringUtils.isNullOrEmpty(operatorSelectionURL))
         {
             return MobileConnectStatus.operatorSelection(operatorSelectionURL);
         }
         else
         {
-             return MobileConnectStatus.startAuthorization(discoveryResponse);
+            return MobileConnectStatus.startAuthorization(discoveryResponse);
         }
     }
 
     /**
-     * This method is called to extract the response from the operator selection process and then determine what to do next.
+     * This method is called to extract the response from the operator selection process and then determine what to
+     * do next.
      * <p>
      *
      * @param config Mobile Connect Configuration instance
@@ -141,7 +147,7 @@ public class DiscoveryService extends BaseService
         }
 
         ParsedDiscoveryRedirect parsedDiscoveryRedirect = captureParsedDiscoveryRedirect.getParsedDiscoveryRedirect();
-        if(parsedDiscoveryRedirect == null || !parsedDiscoveryRedirect.hasMCCAndMNC())
+        if (parsedDiscoveryRedirect == null || !parsedDiscoveryRedirect.hasMCCAndMNC())
         {
             // The operator has not been identified, need to start again.
             return MobileConnectStatus.startDiscovery();
@@ -154,33 +160,37 @@ public class DiscoveryService extends BaseService
             CaptureDiscoveryResponse captureDiscoveryResponse = new CaptureDiscoveryResponse();
 
             // Obtain the discovery information for the selected operator
-            discovery.completeSelectedOperatorDiscovery(config, config.getDiscoveryRedirectURL(),
-                    parsedDiscoveryRedirect.getSelectedMCC(),
-                    parsedDiscoveryRedirect.getSelectedMNC(),
-                    options, null, captureDiscoveryResponse);
+            discovery.completeSelectedOperatorDiscovery(config,
+                                                        config.getDiscoveryRedirectURL(),
+                                                        parsedDiscoveryRedirect.getSelectedMCC(),
+                                                        parsedDiscoveryRedirect.getSelectedMNC(),
+                                                        options,
+                                                        null,
+                                                        captureDiscoveryResponse);
             discoveryResponse = captureDiscoveryResponse.getDiscoveryResponse();
 
             //move to models
             DiscoveryModel.getInstance().setMcc(parsedDiscoveryRedirect.getSelectedMCC());
             DiscoveryModel.getInstance().setMnc(parsedDiscoveryRedirect.getSelectedMNC());
             DiscoveryModel.getInstance().setEncryptedMSISDN(parsedDiscoveryRedirect.getEncryptedMSISDN());
-
         }
         catch (DiscoveryException ex)
         {
             return MobileConnectStatus.error(INTERNAL_ERROR_CODE, "Failed to obtain operator details.", ex);
         }
 
-        if(!discoveryResponse.isCached())
+        if (!discoveryResponse.isCached())
         {
-            if(!isSuccessResponseCode(discoveryResponse.getResponseCode()))
+            if (!isSuccessResponseCode(discoveryResponse.getResponseCode()))
             {
                 ErrorResponse errorResponse = getErrorResponse(discoveryResponse);
-                return MobileConnectStatus.error(errorResponse.get_error(), errorResponse.get_error_description(), discoveryResponse);
+                return MobileConnectStatus.error(errorResponse.get_error(),
+                                                 errorResponse.get_error_description(),
+                                                 discoveryResponse);
             }
         }
 
-        if(discovery.isOperatorSelectionRequired(discoveryResponse))
+        if (discovery.isOperatorSelectionRequired(discoveryResponse))
         {
             return MobileConnectStatus.startDiscovery();
         }
@@ -189,121 +199,42 @@ public class DiscoveryService extends BaseService
     }
 
     /**
-     * Create an Android WebView to display the MNO Discovery page. The Webview then captures the redirect on success containing
+     * Create an Android WebView to display the MNO Discovery page. The Webview then captures the redirect on success
+     * containing
      * the MMC and MNC values. The handler is then called with these values.
-     * @param config Mobile Connect Configuration instance
-     * @param activity The parent Activity
-     * @param discoveryHandler The Android Handler
-     * @param operatorUrl The MNO discovery URI.
+     *
+     * @param config            Mobile Connect Configuration instance
+     * @param context           The Android context
+     * @param discoveryListener The implementation of {@link DiscoveryListener} which will receive Success/Failure
+     *                          callbacks
+     * @param operatorUrl       The MNO discovery URI.
      */
-    public void doDiscoveryWithWebView(final MobileConnectConfig config, Activity activity, final Handler discoveryHandler, final String operatorUrl) {
+    @SuppressWarnings("unused")
+    public void doDiscoveryWithWebView(final MobileConnectConfig config,
+                                       final Context context,
+                                       final DiscoveryListener discoveryListener,
+                                       final String operatorUrl)
+    {
 
-        ViewGroup.LayoutParams fillParent = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
-        LinearLayoutCompat webViewLayout = (LinearLayoutCompat)activity.getLayoutInflater().inflate(R.layout.discovery_web_view, null);
-        WebView view = (WebView)webViewLayout.findViewById(R.id.discoveryWebView);
-        activity.addContentView(webViewLayout, fillParent);
+        RelativeLayout webViewLayout = (RelativeLayout) LayoutInflater.from(context)
+                                                                      .inflate(R.layout.layout_web_view, null);
 
-        view.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onCloseWindow(WebView w) {
-                super.onCloseWindow(w);
-                Log.d(TAG, "Window close");
-                w.setVisibility(View.INVISIBLE);
-                w.destroy();
-            }
+        final InteractableWebView webView = (InteractableWebView) webViewLayout.findViewById(R.id.web_view);
+        final ProgressBar progressBar = (ProgressBar) webViewLayout.findViewById(R.id.progressBar);
 
-        });
-        view.setWebViewClient(new WebViewClient() {
+        final DiscoveryAuthenticationDialog dialog = DiscoveryAuthenticationDialog.getInstance(context);
 
-            private void handleResult(WebView view, String url) {
-                DiscoveryModel.getInstance().setDiscoveryServiceRedirectedURL(url);
+        dialog.setContentView(webViewLayout);
 
-                view.stopLoading();
-//
-//                final ViewGroup viewGroup = (ViewGroup) view.getParent();
-//                if (viewGroup != null)
-//                {
-//                    viewGroup.removeView(view);
-//                }
-//                view.removeAllViews();
+        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebViewClient(new DiscoveryWebViewClient(dialog,
+                                                            progressBar,
+                                                            config.getDiscoveryRedirectURL(),
+                                                            discoveryListener,
+                                                            config));
 
-                view.setVisibility(View.INVISIBLE);
-//                view.destroy();
-
-                if(DiscoveryModel.getInstance().getDiscoveryServiceRedirectedURL() != null) {
-                    MobileConnectStatus status =  callMobileConnectOnDiscoveryRedirect(config);
-                    Message message = new Message();
-                    message.obj = status;
-                    discoveryHandler.dispatchMessage(message);
-                }
-            }
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url){
-                Log.d(TAG, "shouldOverrideUrlLoading "+url);
-                boolean status=false;
-                if (url != null && url.contains("mcc_mnc=")) {
-                    handleResult(view, url);
-                } else {
-                    view.loadUrl(url);
-                }
-                return status;
-            }
-
-            @Override
-            public void onReceivedError(WebView view, int errorCode,
-                                        String description, String failingUrl) {
-                Log.d(TAG, "onReceivedError errorCode=" + errorCode
-                        + " description=" + description + " failingUrl="
-                        + failingUrl);
-
-                view.setVisibility(View.INVISIBLE);
-                view.destroy();
-          }
-
-            /*
-             * The onPageStarted method is called whenever the WebView
-             * starts to load a new page - by examining the url for a
-             * discovery token we can extract this and move to the next
-             * stage of the process
-             *
-             * @see
-             * android.webkit.WebViewClient#onPageStarted(android.webkit
-             * .WebView, java.lang.String, android.graphics.Bitmap)
-             */
-            @Override
-            public void onPageStarted(WebView view, String url,
-                                      Bitmap favicon) {
-                Log.d(TAG, "onPageStarted disco url=" + url);
-							/*
-							 * Check to see if the url contains the discovery token
-							 * identifier - it could be a url parameter or a page
-							 * fragment. The following checks and string manipulations
-							 * retrieve the actual discovery token
-							 */
-
-                if (url != null && url.contains("mcc_mnc=")) {
-                    handleResult(view, url);
-                }
-            }
-
-        });
-
-					/*
-					 * enable JavaScript - the discovery web pages are enhanced with
-					 * JavaScript
-					 */
-        WebSettings settings = view.getSettings();
-        settings.setJavaScriptEnabled(true);
-        settings.setSupportMultipleWindows(false);
-        settings.setDomStorageEnabled(true);
-        settings.setDatabaseEnabled(true);
-        String databasePath = activity.getApplicationContext().getDir("database", Context.MODE_PRIVATE).getPath();
-        settings.setDatabasePath(databasePath);
-
-        HashMap<String, String> extraheaders = new HashMap<String, String>();
-        view.loadUrl(operatorUrl, extraheaders);
-        view.requestFocus(View.FOCUS_DOWN);
+        webView.loadUrl(operatorUrl);
+        dialog.show();
     }
 
     /**
@@ -316,7 +247,7 @@ public class DiscoveryService extends BaseService
     ErrorResponse getErrorResponse(DiscoveryResponse discoveryResponse)
     {
         ErrorResponse errorResponse = discovery.getErrorResponse(discoveryResponse);
-        if(null == errorResponse)
+        if (null == errorResponse)
         {
             errorResponse = new ErrorResponse();
             errorResponse.set_error(INTERNAL_ERROR_CODE);
@@ -325,8 +256,54 @@ public class DiscoveryService extends BaseService
         return errorResponse;
     }
 
-    public void setDiscovery(IDiscovery discovery) {
+    public void setDiscovery(IDiscovery discovery)
+    {
         this.discovery = discovery;
     }
 
+    private class DiscoveryWebViewClient extends MobileConnectWebViewClient
+    {
+        private DiscoveryListener listener;
+
+        private MobileConnectConfig config;
+
+        public DiscoveryWebViewClient(Dialog dialog,
+                                      ProgressBar progressBar,
+                                      String redirectUrl,
+                                      DiscoveryListener listener,
+                                      MobileConnectConfig config)
+        {
+            super(dialog, progressBar, redirectUrl);
+            this.listener = listener;
+            this.config = config;
+        }
+
+        @Override
+        protected boolean qualifyUrl(String url)
+        {
+            return url.contains("mcc_mnc=");
+        }
+
+        @Override
+        protected void handleError(MobileConnectStatus status)
+        {
+            listener.discoveryFailed(status);
+        }
+
+        @Override
+        protected void handleResult(String url)
+        {
+            DiscoveryModel.getInstance().setDiscoveryServiceRedirectedURL(url);
+
+            if (DiscoveryModel.getInstance().getDiscoveryServiceRedirectedURL() != null)
+            {
+                MobileConnectStatus status = callMobileConnectOnDiscoveryRedirect(config);
+
+                if (!status.isError() && !status.isStartDiscovery())
+                {
+                    listener.discoveryComplete(status);
+                }
+            }
+        }
+    }
 }

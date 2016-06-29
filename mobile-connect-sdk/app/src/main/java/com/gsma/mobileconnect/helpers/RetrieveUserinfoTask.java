@@ -20,30 +20,42 @@ import java.net.URI;
 import java.util.ArrayList;
 
 /**
- * At the moment User Info is not yet fully supported. This Android Async class attempts to exercise some of its functionality.
+ * At the moment User Info is not yet fully supported. This Android Async class attempts to exercise some of its
+ * functionality.
  * Created by nick.copley on 03/03/2016.
  */
-public class RetrieveUserinfoTask extends AsyncTask<Void, Void, UserInfo> {
+public class RetrieveUserinfoTask extends AsyncTask<Void, Void, UserInfo>
+{
     private static final String TAG = "RetrieveUserinfoTask";
 
     String userinfoUri;
-    String accessToken;
-//	String redirectUri;
-    UserInfoListener listener;
-    AndroidRestClient restClient;
-    String clientId;
-    String secret;
 
+    String accessToken;
+
+    //	String redirectUri;
+    UserInfoListener listener;
+
+    AndroidRestClient restClient;
+
+    String clientId;
+
+    String secret;
 
     /**
      * Constructor.
+     *
      * @param userinfoUri URI for the service
      * @param accessToken Access token
-     * @param clientId Application client Id
-     * @param secret Application client secret
-     * @param listener Listener for callbacks
+     * @param clientId    Application client Id
+     * @param secret      Application client secret
+     * @param listener    Listener for callbacks
      */
-    public RetrieveUserinfoTask(String userinfoUri, String accessToken, String clientId, String secret, UserInfoListener listener) {
+    public RetrieveUserinfoTask(String userinfoUri,
+                                String accessToken,
+                                String clientId,
+                                String secret,
+                                UserInfoListener listener)
+    {
         this.userinfoUri = userinfoUri;
         this.accessToken = accessToken;
         this.listener = listener;
@@ -54,8 +66,9 @@ public class RetrieveUserinfoTask extends AsyncTask<Void, Void, UserInfo> {
     }
 
     @Override
-    protected UserInfo doInBackground(Void... params) {
-        JSONObject json=null;
+    protected UserInfo doInBackground(Void... params)
+    {
+        JSONObject json = null;
         UserInfo userInfo = null;
 
         HttpGet httpRequest = new HttpGet(userinfoUri);
@@ -69,10 +82,14 @@ public class RetrieveUserinfoTask extends AsyncTask<Void, Void, UserInfo> {
         httpParams.setParameter(ClientPNames.HANDLE_REDIRECTS, Boolean.TRUE);
         httpRequest.setParams(httpParams);
 
-        try {
+        try
+        {
             HttpClientContext context = restClient.getHttpClientContext(clientId, secret, uri);
-            RestResponse restResponse = restClient.callRestEndPoint(httpRequest, context, 3000, new ArrayList<KeyValuePair>());
-            if(200 == restResponse.getStatusCode())
+            RestResponse restResponse = restClient.callRestEndPoint(httpRequest,
+                                                                    context,
+                                                                    3000,
+                                                                    new ArrayList<KeyValuePair>());
+            if (200 == restResponse.getStatusCode())
             {
                 String response = restResponse.getResponse();
                 Log.d(TAG, response);
@@ -80,19 +97,22 @@ public class RetrieveUserinfoTask extends AsyncTask<Void, Void, UserInfo> {
             }
             else
             {
-                Log.d(TAG, "Non successful response code [" + restResponse.getStatusCode() + "] " + restResponse.getResponse());
+                Log.d(TAG,
+                      "Non successful response code [" + restResponse.getStatusCode() + "] " +
+                      restResponse.getResponse());
             }
 
         }
         catch (IOException | RestException e)
         {
-            Log.d(TAG,"Error calling User service",e);
+            Log.d(TAG, "Error calling User service", e);
         }
         return userInfo;
     }
 
     @Override
-    protected void onPostExecute(UserInfo userInfo) {
+    protected void onPostExecute(UserInfo userInfo)
+    {
         Log.d(TAG, "onPostExecute for " + userInfo);
         listener.userReceived(userInfo);
     }
