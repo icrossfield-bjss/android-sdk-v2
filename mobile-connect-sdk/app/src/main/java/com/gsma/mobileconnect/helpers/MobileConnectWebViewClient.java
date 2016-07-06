@@ -64,6 +64,11 @@ public abstract class MobileConnectWebViewClient extends WebViewClient
             return false;
         }
 
+        // If there is a delay before true is returned by this method then WebView will sometimes just continue loading the
+        // url regardless, so we have to ensure the callback url is not being loaded. We load a blank page for this reason.
+        view.stopLoading();
+        view.loadData("", "text/html", null);
+
         // Check for response errors in the URL
         if (url.contains("error"))
         {

@@ -7,10 +7,10 @@ android {
 
     defaultConfig {
         applicationId "com.gsma.android"
-        minSdkVersion 19
+        minSdkVersion 14
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "2.1.1"
         multiDexEnabled true
     }
 
@@ -35,8 +35,6 @@ android {
 
 
 dependencies {
-
-    compile project(':app-debug')
     compile (name: 'mobile-connect-android-sdk-debug', ext:'aar')
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
