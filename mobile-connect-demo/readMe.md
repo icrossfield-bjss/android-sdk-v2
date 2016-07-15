@@ -1,7 +1,5 @@
 ## Mobile Connect Android SDK
 
-This README supercedes any others in this project tree.
-
 ## Motivation
 
 Mobile Connect Android SDK is designed to help developers quickly bootstrap their own solutions by seeing how it works and what is required.
