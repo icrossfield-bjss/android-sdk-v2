@@ -1,19 +1,3 @@
-                                 SOFTWARE USE PERMISSION
-
-By downloading and accessing this software and associated documentation files ("Software") you are granted the
-unrestricted right to deal in the Software, including, without limitation the right to use, copy, modify, publish,
-sublicense and grant such rights to third parties, subject to the following conditions:
-
-The following copyright notice and this permission notice shall be included in all copies, modifications or
-substantial portions of this Software: Copyright © 2016 GSM Association.
-
-THE SOFTWARE IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. YOU
-AGREE TO INDEMNIFY AND HOLD HARMLESS THE AUTHORS AND COPYRIGHT HOLDERS FROM AND AGAINST ANY SUCH LIABILITY.
-
-
 ## Mobile Connect Android SDK
 
 This README supercedes any others in this project tree.
@@ -37,6 +21,12 @@ Windows - Java Development Kit (JDK) 8
 Linux - Java Development Kit (JDK) 8
 
 -----------------
+
+## Usage
+
+Any updates on the Android SDK will require re-building by performing `gradlew assemble` on the Android SDK. This will create an `AAR` within the `build\outputs\aar` directory for each `Build Type`. For this Demo Application to get updated with the latest changes from the SDK, simply copy any of the `AAR`'s in the mentioned directory and paste it in this Demo's `app\libs` directory.
+
+Run/Debug the Demo on an Android Studio Emulator which is running API Level 15 or higher. Third party emulators will work providing they are fully compatible with Android's SDK.
 
 ## Support
 
