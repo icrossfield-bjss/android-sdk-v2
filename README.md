@@ -1,10 +1,9 @@
-## Mobile Connect Android SDK
+# GSMA MobileConnect Android SDK
 
-This README supercedes any others in this project tree.
+## Quick Start
 
-## Motivation
-
-Mobile Connect Android SDK is designed to help developers quickly bootstrap their own solutions by seeing how it works and what is required.
+- Build and run the [demo code](mobile-connect-demo/)
+- Install and use the [sdk](mobile-connect-sdk//)
 
 ## Installation
 
@@ -24,19 +23,12 @@ Windows - Java Development Kit (JDK) 8
 
 Linux - Java Development Kit (JDK) 8
 
------------------
-
-Any updates on the Android SDK will require re-building by performing `gradlew assemble` on the Android SDK. This will create an `AAR` within the `build\outputs\aar` directory for each `Build Type`. For the Demo Application to get updated with the latest changed from the SDK, simply copy any of the `AAR`'s in the mentioned directory and paste it in `app\libs` within the Demo Application.
-
------------------
-
-## Usage
-
-Run/Debug the Demo (The demo application is a sub-project of this Git Repository) application on an Android Studio Emulator which is running API Level 15 or higher. Third party emulators will work providing they are fully compatible with Android's SDK.
-
 ## Support
 
-Any issues, please send us a message here: https://developer.mobileconnect.io/content/contact-us
+If you encounter any issues which are not resolved by consulting the resources below then [send us a message](https://developer.mobileconnect.io/content/contact-us)
 
-Enjoy using Mobile Connect!
+## Resources
 
+- [SDK Class Documentation](Docs/README.md)
+- [MobileConnect Discovery API Information](https://developer.mobileconnect.io/content/discovery-api-0)
+- [MobileConnect Authentication API Information](https://developer.mobileconnect.io/content/mobile-connect-api)
