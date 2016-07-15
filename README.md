@@ -29,6 +29,5 @@ If you encounter any issues which are not resolved by consulting the resources b
 
 ## Resources
 
-- [SDK Class Documentation](Docs/README.md)
 - [MobileConnect Discovery API Information](https://developer.mobileconnect.io/content/discovery-api-0)
 - [MobileConnect Authentication API Information](https://developer.mobileconnect.io/content/mobile-connect-api)
