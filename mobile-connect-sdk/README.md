@@ -24,9 +24,17 @@ Linux - Java Development Kit (JDK) 8
 
 ## Usage
 
-Any updates on the Android SDK will require re-building by performing `gradlew assemble` on the Android SDK. This will create an `AAR` within the `build\outputs\aar` directory for each `Build Type`. For this Demo Application to get updated with the latest changes from the SDK, simply copy any of the `AAR`'s in the mentioned directory and paste it in this Demo's `app\libs` directory.
+Any updates on the Android SDK will require re-building by performing `gradlew assemble` on the Android SDK. This will create an `AAR` within the `build\outputs\aar` directory for each `Build Type`. The generated `AAR` can then be used to import within the [Demo Application](android-sdk-v2/mobile-connect-demo/).
 
-Run/Debug the Demo on an Android Studio Emulator which is running API Level 15 or higher. Third party emulators will work providing they are fully compatible with Android's SDK.
+This Android SDK relies on the [Java SDK] (Mobile-Connect/java-sdk-v1/). The generated `JAR` file from the JAVA SDK is placed within the Android SDK's `app\libs` directory. The following statement is required within the SDK's `app` `build.gradle` file:
+
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+Though you may wish to swap this with:
+
+    compile files('libs/mobile-connect-sdk-2.0.0-SNAPSHOT.jar')
+
+If you wish to `compile` only one specific `JAR`. 
 
 ## Support
 
