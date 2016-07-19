@@ -26,13 +26,13 @@ Linux - Java Development Kit (JDK) 8
 
 Any updates on the Android SDK will require re-building by performing `gradlew assemble` on the Android SDK. This will create an `AAR` within the `build\outputs\aar` directory for each `Build Type`. The generated `AAR` can then be used to import within the [Demo Application](https://github.com/Mobile-Connect/android-sdk-v2/tree/master/mobile-connect-demo).
 
-This Android SDK relies on the [Java SDK] (https://github.com/Mobile-Connect/java-sdk-v1). The generated `JAR` file from the JAVA SDK is placed within the Android SDK's `app\libs` directory. The following statement is required within the SDK's `app` `build.gradle` file:
+This Android SDK relies on the [Java SDK] (https://github.com/Mobile-Connect/java-sdk-v1). The generated `JAR` file from the [Java SDK](https://github.com/Mobile-Connect/java-sdk-v1) is placed within the Android SDK's `app\libs` directory. The following statement is required within the SDK's `app` `build.gradle` file:
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
 Though you may wish to swap this with:
 
-    compile files('libs/mobile-connect-sdk-2.0.0-SNAPSHOT.jar')
+    compile files('libs/mobile-connect-sdk-1.0.0.jar')
 
 If you wish to `compile` only one specific `JAR`. 
 
